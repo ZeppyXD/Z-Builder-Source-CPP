@@ -1,0 +1,9 @@
+C:\Users\zephy\source\repos\ZBDiscordTokenGrabber\ZBDiscordTokenGrabber\bin\Release\ZBDiscordTokenGrabber.exe.config
+C:\Users\zephy\source\repos\ZBDiscordTokenGrabber\ZBDiscordTokenGrabber\bin\Release\ZBDiscordTokenGrabber.exe
+C:\Users\zephy\source\repos\ZBDiscordTokenGrabber\ZBDiscordTokenGrabber\bin\Release\ZBDiscordTokenGrabber.pdb
+C:\Users\zephy\source\repos\ZBDiscordTokenGrabber\ZBDiscordTokenGrabber\obj\Release\ZBDiscordTokenGrabber.csprojAssemblyReference.cache
+C:\Users\zephy\source\repos\ZBDiscordTokenGrabber\ZBDiscordTokenGrabber\obj\Release\ZBDiscordTokenGrabber.Properties.Resources.resources
+C:\Users\zephy\source\repos\ZBDiscordTokenGrabber\ZBDiscordTokenGrabber\obj\Release\ZBDiscordTokenGrabber.csproj.GenerateResource.cache
+C:\Users\zephy\source\repos\ZBDiscordTokenGrabber\ZBDiscordTokenGrabber\obj\Release\ZBDiscordTokenGrabber.csproj.CoreCompileInputs.cache
+C:\Users\zephy\source\repos\ZBDiscordTokenGrabber\ZBDiscordTokenGrabber\obj\Release\ZBDiscordTokenGrabber.exe
+C:\Users\zephy\source\repos\ZBDiscordTokenGrabber\ZBDiscordTokenGrabber\obj\Release\ZBDiscordTokenGrabber.pdb
