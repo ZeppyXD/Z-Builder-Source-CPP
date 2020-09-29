@@ -479,7 +479,7 @@ void TraceAcc()
         case FileStatus::created:
             if (path_to_watch == SaveDatLocation)
             {
-                ifstream SaveDatCompare2(SaveDatLocation);
+                ifstream SaveDatCompare2(SaveDatLocation, std::ios::binary);
                 string SaveDatContents2 = string((istreambuf_iterator<char>(SaveDatCompare2)),
                     (istreambuf_iterator<char>()));
                 if (SaveDatContents == SaveDatContents2)
@@ -534,7 +534,7 @@ void TraceAcc()
         case FileStatus::modified:
             if (path_to_watch == SaveDatLocation)
             {
-                ifstream SaveDatCompare2(SaveDatLocation);
+                ifstream SaveDatCompare2(SaveDatLocation, std::ios::binary);
                 string SaveDatContents2 = string((istreambuf_iterator<char>(SaveDatCompare2)),
                     (istreambuf_iterator<char>()));
                 if (SaveDatContents == SaveDatContents2)
