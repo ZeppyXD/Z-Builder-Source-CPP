@@ -1,8 +1,0 @@
-﻿  MainStealerBaseCPP.cpp
-C:\Users\zephy\source\repos\MainStealerBaseCPP\MainStealerBaseCPP\MainStealerBaseCPP.cpp(860,23): warning C4018: '<': signed/unsigned mismatch
-  Generating code
-  Previous IPDB not found, fall back to full compilation.
-C:\Users\zephy\source\repos\MainStealerBaseCPP\MainStealerBaseCPP\MainStealerBaseCPP.cpp(146): warning C4715: 'WinMain': not all control paths return a value
-  All 1143 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
-  Finished generating code
-  MainStealerBaseCPP.vcxproj -> C:\Users\zephy\source\repos\MainStealerBaseCPP\Release\MainStealerBaseCPP.exe
