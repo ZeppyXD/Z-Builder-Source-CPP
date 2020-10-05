@@ -1,5 +1,6 @@
 // TODO:
 // Add exception for when there is no save.dat
+// Add search for custom save.dats
 
 #define _CRT_SECURE_NO_WARNINGS
 
