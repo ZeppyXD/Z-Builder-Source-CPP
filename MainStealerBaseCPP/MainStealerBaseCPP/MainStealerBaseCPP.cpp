@@ -182,7 +182,7 @@ string GetMAC()
         string PotentialMAC = PotentialMACLine.substr(0, 16);
         if (PotentialMAC.find('-') != string::npos)
         {
-            AllMacs += PotentialMAC + " / ";
+            AllMacs += PotentialMAC + " | ";
         }
         MACResults.erase(0, Splitter + 1);
     }
