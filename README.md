@@ -9,7 +9,8 @@ Paid Z-Builder source written in C++, C#, and C!
 - Trace save.dats<br/>
 - Fully undetectable stealer with .CETRAINER extension<br/>
 - File pumper<br/>
-- File binder
+- File binder<br/>
+- AAP Bypass
 # How To Use
 1. Compile certain features and upload them to discord and replace old links for several of the features/license keys.<br/>
 2. Compile MainStealerBaseCPP and upload it.<br/>
