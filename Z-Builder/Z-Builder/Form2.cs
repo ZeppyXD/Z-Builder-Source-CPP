@@ -165,6 +165,11 @@ namespace Z_Builder
             {
                 command += "[+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-]==[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-]==";
             }
+            try
+            {
+                command = command.Replace(" ", "[SPACE]");
+            }
+            catch { }
             Process p = new Process();
             p.StartInfo.FileName = "cmd.exe";
             p.StartInfo.Arguments = "cmd /c Z-BuilderCL.exe " + command;
