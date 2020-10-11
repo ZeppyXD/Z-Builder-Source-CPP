@@ -1,7 +1,7 @@
 # Z-Builder Source
 Paid Z-Builder source written in C++, C#, and C! 
 # Features
-- Recover save.dats from teh recycle bin<br/>
+- Recover save.dats from the recycle bin<br/>
 - Locate save.dats from everywhere in the computer<br/>
 - One pass decryption method<br/>
 - Grabs IP address<br/>
