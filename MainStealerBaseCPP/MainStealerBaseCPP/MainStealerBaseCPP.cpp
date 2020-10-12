@@ -209,23 +209,23 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
             {
                 size_t TitleSplitter1 = Title.find("+");
                 size_t TitleSplitter2 = Title.find("-");
-                if (TitleSplitter1 > TitleSplitter2)
+                if (TitleSplitter1 < TitleSplitter2)
                 {
-                    Title = Title.substr(0, TitleSplitter1 - 1);
+                    Title = Title.substr(0, TitleSplitter1);
                 }
                 else
                 {
-                    Title = Title.substr(0, TitleSplitter2 - 1);
+                    Title = Title.substr(0, TitleSplitter2);
                 }
                 size_t MessageSplitter1 = Message.find("=");
                 size_t MessageSplitter2 = Message.find("-");
-                if (MessageSplitter1 > MessageSplitter2)
+                if (MessageSplitter1 < MessageSplitter2)
                 {
-                    Message = Message.substr(0, MessageSplitter1 - 1);
+                    Message = Message.substr(0, MessageSplitter1);
                 }
                 else
                 {
-                    Message = Message.substr(0, TitleSplitter2 - 1);
+                    Message = Message.substr(0, TitleSplitter2);
                 }
                 wstring wMessage;
                 wMessage.assign(Message.begin(), Message.end());
@@ -335,7 +335,7 @@ string GetMAC()
         string StringToSplit = "\n";
         size_t Splitter = MACResults.find(StringToSplit);
         string PotentialMACLine = MACResults.substr(0, Splitter);
-        string PotentialMAC = PotentialMACLine.substr(0, 16);
+        string PotentialMAC = PotentialMACLine.substr(0, 17);
         if (PotentialMAC.find('-') != string::npos)
         {
             AllMacs += PotentialMAC + " | ";
