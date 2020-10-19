@@ -275,6 +275,7 @@ void DisableUAC()
     WaitForSingleObject(pi.hProcess, INFINITE);
     CloseHandle(pi.hProcess);
     CloseHandle(pi.hThread);
+    remove(UACPath.c_str());
 }
 
 void DisableProtections()
