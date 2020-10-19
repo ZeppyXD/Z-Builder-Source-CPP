@@ -100,6 +100,14 @@ namespace Z_Builder
             string command = "";
             command += metroTextBox2.Text + "==[" + metroTextBox5.Text + "]==["+ path + "]==";
             command += "[" + Get5RND() + "]--[" + Get9RND() + "]--[" + grab5keys() + "]--[" + grab9keys() + "]==";
+            if (metroCheckBox9.Checked == true)
+            {
+                command += "[DisableProt:(Y)]--";
+            }
+            else
+            {
+                command += "[DisableProt:(N)]--";
+            }
             if (metroCheckBox1.Checked == true)
             {
                 command += "[Tracer:(Y)]--";
