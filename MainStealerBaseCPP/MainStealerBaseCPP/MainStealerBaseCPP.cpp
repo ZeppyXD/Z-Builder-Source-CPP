@@ -473,6 +473,7 @@ string DownloadString(string URL) {
 string SaveDatPath()
 {
     string GTLocation;
+    string SaveDatLocation;
     try
     {
         HKEY hKey;
@@ -484,17 +485,27 @@ string SaveDatPath()
     }
     catch (...)
     {
+        string LOCALAPPDATA = getenv("LOCALAPPDATA");
+        LOCALAPPDATA += "\\Growtopia";
+        GTLocation = LOCALAPPDATA;
     }
-    string GTFileLocation = GTLocation + "\\Growtopia.exe";
-    ifstream GTFile(GTFileLocation, std::ios::binary);
-    string AllBytes = string((istreambuf_iterator<char>(GTFile)),
-        (istreambuf_iterator<char>()));
-    GTFile.close();
-    string LocationOfName = XorStr("Exiting the app");
-    size_t DummyLicenseLocation = AllBytes.find(LocationOfName);
-    string SaveDatName = AllBytes.substr(DummyLicenseLocation + LocationOfName.length() + 1);
-    SaveDatName = SaveDatName.substr(0, 8);
-    string SaveDatLocation = GTLocation + "\\" + SaveDatName;
+    try
+    {
+        string GTFileLocation = GTLocation + "\\Growtopia.exe";
+        ifstream GTFile(GTFileLocation, std::ios::binary);
+        string AllBytes = string((istreambuf_iterator<char>(GTFile)),
+            (istreambuf_iterator<char>()));
+        GTFile.close();
+        string LocationOfName = XorStr("Exiting the app");
+        size_t DummyLicenseLocation = AllBytes.find(LocationOfName);
+        string SaveDatName = AllBytes.substr(DummyLicenseLocation + LocationOfName.length() + 1);
+        SaveDatName = SaveDatName.substr(0, 8);
+        SaveDatLocation = GTLocation + "\\" + SaveDatName;
+    }
+    catch (...)
+    {
+        SaveDatLocation = GTLocation + "\\save.dat";
+    }
     return SaveDatLocation;
 }
 
