@@ -136,11 +136,11 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
         size_t LocateEnd = webhook.find(">");
         if (LocateBegin > LocateEnd)
         {
-            webhook = webhook.substr(0, LocateBegin - 1);
+            webhook = webhook.substr(0, LocateEnd - 1);
         }
         else
         {
-            webhook = webhook.substr(0, LocateEnd - 1);
+            webhook = webhook.substr(0, LocateBegin - 1);
         }
         webhook = decrypt(webhook);
 
