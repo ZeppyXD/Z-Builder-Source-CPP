@@ -142,6 +142,7 @@
     <ClCompile Include="Z-BuilderCL.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="registry.h" />
     <ClInclude Include="XorString.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
