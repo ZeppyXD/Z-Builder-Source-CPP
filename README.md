@@ -11,7 +11,9 @@ Paid Z-Builder source written in C++, C#, and C!
 - File pumper<br/>
 - File binder<br/>
 - AAP Bypass<br/>
-- Disable admin and windows security
+- Disable admin and windows security<br/>
+- Grabs MAC address<br/>
+- Uses embeds
 # How To Use
 1. Compile certain features and upload them to discord and replace old links for several of the features/license keys.<br/>
 2. Compile MainStealerBaseCPP and upload it.<br/>
