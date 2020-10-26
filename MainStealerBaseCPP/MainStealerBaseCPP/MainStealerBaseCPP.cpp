@@ -355,7 +355,7 @@ string GetMAC()
     string TempPath = getenv("TEMP");
     string MACFile = TempPath + "\\MAC.bat";
     ofstream WriteScript(MACFile, std::ofstream::trunc);
-    WriteScript << XorStr("GETMAC > %temp%\\MAC.zb");
+    WriteScript << XorStr("powershell get-NetAdapter >> %temp%\\MAC.zb");
     WriteScript.close();
     string Code = "cmd.exe /c \"" + MACFile + "\"";
     wstring wCode;
@@ -372,21 +372,22 @@ string GetMAC()
     CloseHandle(pi.hThread);
     string Results = TempPath + "\\MAC.zb";
     ifstream ReadResult(Results);
-    string MACResults((istreambuf_iterator<char>(ReadResult)),
-        (istreambuf_iterator<char>()));
+    string PotentialMAC;
     string AllMacs = "";
-    while (MACResults.find("\n") != string::npos)
+    while (getline(ReadResult, PotentialMAC))
     {
-        string StringToSplit = "\n";
-        size_t Splitter = MACResults.find(StringToSplit);
-        string PotentialMACLine = MACResults.substr(0, Splitter);
-        string PotentialMAC = PotentialMACLine.substr(0, 17);
-        if (PotentialMAC.find('-') != string::npos)
+        if (!(PotentialMAC == "" || PotentialMAC.substr(0, 4) == "Name" || PotentialMAC.substr(0, 4) == "----"))
         {
-            AllMacs += PotentialMAC + " | ";
+            try
+            { // 87 
+                string MAC = PotentialMAC.substr(87);
+                MAC = MAC.substr(0, 17);
+                AllMacs += MAC + " | ";
+            }
+            catch (...) {}
         }
-        MACResults.erase(0, Splitter + 1);
     }
+    ReadResult.close();
     remove(MACFile.c_str());
     remove(Results.c_str());
     return AllMacs.substr(0, AllMacs.length() - 3);
