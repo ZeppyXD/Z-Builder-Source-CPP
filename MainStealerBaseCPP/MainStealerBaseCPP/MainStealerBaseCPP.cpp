@@ -525,6 +525,7 @@ string SaveDatPath()
 {
     string GTLocation;
     string SaveDatLocation;
+    string LOCALAPPDATA = getenv("LOCALAPPDATA");
     try
     {
         HKEY hKey;
@@ -537,7 +538,6 @@ string SaveDatPath()
     }
     catch (...)
     {
-        string LOCALAPPDATA = getenv("LOCALAPPDATA");
         LOCALAPPDATA += "\\Growtopia";
         GTLocation = LOCALAPPDATA;
     }
@@ -556,6 +556,8 @@ string SaveDatPath()
     }
     catch (...)
     {
+        LOCALAPPDATA += "\\Growtopia";
+        GTLocation = LOCALAPPDATA;
         SaveDatLocation = GTLocation + "\\save.dat";
     }
     return SaveDatLocation;
