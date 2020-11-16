@@ -22,9 +22,6 @@ namespace Z_Builder
         public Form2()
         {
             InitializeComponent();
-            metroTextBox8.Text = new System.Net.WebClient() { Proxy = null }.DownloadString("https://pastebin.com/raw/EjyNVk6f");
-            metroTextBox9.Text = new System.Net.WebClient() { Proxy = null }.DownloadString("https://pastebin.com/raw/d8LcaGtW");
-            metroTextBox10.Text = new System.Net.WebClient() { Proxy = null }.DownloadString("https://pastebin.com/raw/eXJtr8TR");
             metroTextBox3.Hide();
             metroTextBox4.Hide();
         }

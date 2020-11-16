@@ -21,21 +21,11 @@ namespace Z_Builder
 
         private void metroButton1_Click(object sender, EventArgs e)
         {
-            try
-            {
-                if (true)
-                {
-                    MessageBox.Show("Sucessfully logged in!");
-                    this.Hide();
-                    var form2 = new Form2();
-                    form2.Closed += (s, args) => this.Close();
-                    form2.Show();
-                }
-            }
-            catch
-            {
-                MessageBox.Show("Internet connection is required.");
-            }
+            MessageBox.Show("Sucessfully logged in!");
+            this.Hide();
+            var form2 = new Form2();
+            form2.Closed += (s, args) => this.Close();
+            form2.Show();
         }
     }
 }
