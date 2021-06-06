@@ -23,6 +23,6 @@ Z-Builder (an account stealer builder for Growtopia) source written in C++, C#, 
 - Zephyr and Stex are NOT RESPONSIBLE for what happens to you / what you do with Z-Builder. <br/>
 - Skidding is not alowed at all.<br/>
 - Only Stex#8520 is to be messaged with issues/questions with the builder IF your issue on GitHub isn't answered. <br/>
-https://discord.gg/7RMKrbBPhk - Discord Server
+https://discord.gg/rUHNtUtcsU - Discord Server
 
 Enjoy.
