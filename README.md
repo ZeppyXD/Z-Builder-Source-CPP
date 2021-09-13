@@ -25,4 +25,5 @@ Z-Builder (an account stealer builder for Growtopia) source written in C++, C#, 
 - Only Stex#8520 is to be messaged with issues/questions with the builder IF your issue on GitHub isn't answered. <br/>
 https://discord.gg/rUHNtUtcsU - Discord Server
 
-Enjoy.
+Enjoy.<br/>
+Arioz was here :3
